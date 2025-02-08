@@ -1,5 +1,5 @@
 locations = [
-    #Location name, entrance name list
+    #Location name, region name, entrance name list
 ]
 
 entrances = [

@@ -8,6 +8,7 @@ major_items = [
     ("Kokiri Sword", 1, ItemClassification.useful),
     ("Master Sword", 1, ItemClassification.useful),
     ("Giant's Knife", 1, ItemClassification.useful),
+    ("Biggoron Sword", 1, ItemClassification.useful),
     ("Deku Shield", 1, ItemClassification.useful),
     ("Hylian Shield", 1, ItemClassification.useful),
     ("Mirror Shield", 1, ItemClassification.useful),
@@ -171,8 +172,6 @@ key_rings_data = [
     ("Chest Game Key Ring", 1, ItemClassification.useful)
 ]
 
-
-
 dungeon_reward_data = [
     ("Kokiri Emerald", 1, (lambda options: ItemClassification.useful)),
     ("Goron Ruby", 1, (lambda options: ItemClassification.useful)),
@@ -184,16 +183,17 @@ dungeon_reward_data = [
     ("Shadow Medallion", 1, (lambda options: ItemClassification.useful)),
     ("Light Medallion", 1, (lambda options: ItemClassification.useful))
 ]
+
 filler_data = [
     ("Recovery Heart", -1, ItemClassification.filler),
     ("Green Rupee", -1, ItemClassification.filler),
-    ("Greg the Green Rupee", -1, ItemClassification.filler),
+    #("Greg the Green Rupee", -1, ItemClassification.filler),
     ("Blue Rupee", -1, ItemClassification.filler),
     ("Red Rupee", -1, ItemClassification.filler),
     ("Purple Rupee", -1, ItemClassification.filler),
-    ("Huge Rupee", -1, ItemClassification.filler),
-    ("Piece of Heart", -1, ItemClassification.filler),
-    ("Heart Container", -1, ItemClassification.filler),
+    #("Huge Rupee", -1, ItemClassification.filler),
+    #("Piece of Heart", -1, ItemClassification.filler),
+    #("Heart Container", -1, ItemClassification.filler),
     ("Ice Trap", -1, ItemClassification.filler),
     ("Milk", -1, ItemClassification.filler),
     ("Fish", -1, ItemClassification.filler),
@@ -214,6 +214,7 @@ filler_data = [
     ("Green Potion Refill", -1, ItemClassification.filler),
     ("Blue Potion Refill", -1, ItemClassification.filler)
 ]
+
 boss_soul_data = [
     ("Gohma's Soul", 1, ItemClassification.progression),
     ("King Dodongo's Soul", 1, ItemClassification.progression),
@@ -225,6 +226,7 @@ boss_soul_data = [
     ("Twinrova's Soul", 1, ItemClassification.progression),
     ("Ganon's Soul", 1, ItemClassification.progression)
 ]
+
 other_setting_item_data = [
     ("Fishing Pole", 1, ItemClassification.useful),
     ("Ocarina A Button", 1, ItemClassification.useful),
@@ -245,16 +247,30 @@ other_setting_item_data = [
     ("Skeleton Key", 1, ItemClassification.useful),
     ("Deku Stick Bag", 1, ItemClassification.useful),
     ("Deku Nut Bag", 1, ItemClassification.useful),
-    ("Triforce", 1, ItemClassification.useful)
+    ("Triforce", 1, ItemClassification.useful) 
 ]
+
+non_useful_item_data = [
+    ("Recovery Heart", 6, ItemClassification.filler),
+    ("Bombs (5)", 2, ItemClassification.filler),
+    ("Bombs (10)", 2, ItemClassification.filler),
+    ("Arrows (5)", 2, ItemClassification.filler),
+    ("Arrows (10)", 3, ItemClassification.filler),
+    ("Blue Rupee", 13, ItemClassification.filler),
+    ("Red Rupee", 5, ItemClassification.filler),
+    ("Purple Rupee", 7, ItemClassification.filler),
+    ("Huge Rupee", 3, ItemClassification.filler)
+]
+
 special_item_data = [
     ("Greg the Green Rupee", 1, ItemClassification.useful),
     ("Huge Rupee", 1, ItemClassification.useful),
-    ("Piece of Heart", 1, ItemClassification.useful),
-    ("Heart Container", 1, ItemClassification.useful),
+    ("Piece of Heart", 35, ItemClassification.useful),
+    ("Heart Container", 8, ItemClassification.useful),
     ("Piece of Heart (WINNER)", 1, ItemClassification.useful),
     ("Green Rupee (LOSER)", 1, ItemClassification.filler)
 ]
+
 non_filler_data = major_items + trade_items + progressive_item_data + skulltula_data + bottles_data + songs_data \
-+ maps_compasses_data + keys_data + key_rings_data + dungeon_reward_data + boss_soul_data + other_setting_item_data + special_item_data
++ maps_compasses_data + keys_data + key_rings_data + dungeon_reward_data + boss_soul_data + other_setting_item_data + special_item_data + non_useful_item_data
 all_items_data = non_filler_data + filler_data
