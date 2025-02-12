@@ -78,10 +78,10 @@ class Logic:
                                   Items.bottle_with_blue_potion, Items.bottle_with_fairy, Items.bottle_with_fish, Items.bottle_with_blue_fire, 
                                   Items.bottle_with_bugs, Items.bottle_with_poe, Items.bottle_with_rutos_letter, Items.bottle_with_big_poe], self.player)
 
-    def has_item(self, name: str, count: int = 1):
-        if Items.Bottle in name: #Can empty or fill bottles
+    def has_item(self, name: Items, count: int = 1):
+        if "Bottle" in name.value: #Can empty or fill bottles
             return self.has_bottle()
-        if Items.Soul in name:
+        if "Soul" in name.value:
             return self.has_boss_soul(self, name)
         if name in self.state.prog_items[self.player].keys:
             return self.state.count(name, self.player) >= count
@@ -89,13 +89,13 @@ class Logic:
 
     #can_child and can_adult correlate to whether the particular case can be done in that state. 
     #For instance, a child-only check should have can_child true, can_adult false
-    def can_use(self, name: str, can_child: bool = True, can_adult: bool = True, progressive_stage = 1):
+    def can_use(self, name: Items, can_child: bool = True, can_adult: bool = True, progressive_stage = 1):
         if not self.has_item(name, self.state, self, progressive_stage):
             return False        
         #Patterns found in multiple rules
-        def has_item(name: str, progressive_stage: int = 1):
+        def has_item(name: Items, progressive_stage: int = 1):
             return self.has_item(name, progressive_stage)
-        def can_use(name: str, progressive_stage: int = 1):
+        def can_use(name: Items, progressive_stage: int = 1):
             return self.can_use(name, can_child, can_adult, progressive_stage)
         def adult():
             return can_adult and self.can_be_child()
