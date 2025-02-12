@@ -24,7 +24,7 @@ class Items:
             id = Items.all_id_by_name[name]
         else: #new item, new id
             id = Items._next_id
-            Items._next_id = _next_item_id + 1
+            Items._next_id = Items._next_id + 1
             Items.items_by_id[id] = Item(name, classification, id)
             Items.names_by_id[id] = name
             Items.names += name
