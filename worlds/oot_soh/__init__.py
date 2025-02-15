@@ -1,11 +1,15 @@
 from worlds.AutoWorld import World, WebWorld
 from .Locations import Locations
 from .Items import Items
+from .Options import SoHOptions, soh_option_groups
 
 class SoHWebWorld(WebWorld):
-    a
+    option_groups = soh_option_groups
+    rich_text_options_doc = True
 
 class SoHWorld(World):
+    options_dataclass = SoHOptions
+    options: SoHOptions
     game: str = "Ocarina of Time (SoH)"
     web: SoHWebWorld
     required_client_version = (0, 5, 1)
