@@ -5,7 +5,7 @@ from BaseClasses import CollectionState
 from typing import List
 from .ItemList import Items
 
-from .LogicDataStructures import EnemyDistance, Enemies
+from .LogicDataStructures import EnemyDistance, Enemies, WaterLevel
 
 class Logic:
     state: CollectionState
@@ -18,36 +18,101 @@ class Logic:
         return True #TODO some settings allow starting as adult to build a logical seed, figure those out
 
     def can_attack(self, child, adult):
-        pass
+        return self.can_damage(child, adult) or self.can_use(Items.boomerang, child, adult) or self.can_use(Items.progressive_hookshot, child, adult)
 
     def can_damage(self, child, adult):
-        pass
+        return self.can_use(Items.progressive_slingshot, child, adult) or self.can_jumpslash() or self.has_explosives() or \
+        self.can_use(Items.dins_fire, child, adult) or self.can_use(Items.progressive_bow, child, adult)
 
     def can_jumpslash(self, child, adult):
-        pass
+        return self.can_jumpslash_except_hammer(child, adult) or self.can_use(Items.megaton_hammer, child, adult)
     
     def can_jumpslash_except_hammer(self, child, adult):
-        pass
+        return self.can_use(Items.deku_stick, child, adult) or self.can_use(Items.kokiri_sword, child, adult) or \
+            self.can_use(Items.master_sword, child, adult) or self.can_use(Items.biggoron_sword, child, adult)
 
     def can_reflect_nuts(self, child, adult):
-        pass
+        return self.can_use(Items.deku_shield, child, adult) or (adult and self.has_item(Items.hylian_shield))
+
+    def can_cut_shrubs(self, child, adult):
+        return self.can_use(Items.kokiri_sword, child, adult) or self.can_use(Items.boomerang, child, adult) or \
+        self.can_use(Items.master_sword, child, adult) or self.can_use(Items.megaton, child, adult) or \
+        self.can_use(Items.biggoron, child, adult) or self.has_explosives()
+    
+    def can_stun_deku(self, child, adult):
+        return self.can_attack(child, adult) or self.can_use(Items.deku_nut, child, adult) or self.can_reflect_nuts(child, adult) 
+
+    def can_leave_forest(self, child, adult):
+        return ClosedForestOn or adult or DekuTreeClear or ShuffleInteriorEntrances or ShuffleOverworldEntrances
+    
+    def call_gossip_fairy_except_suns(self, child, adult):
+        return self.can_use(Items.zeldas_lullaby, child, adult) or self.can_use(Items.eponas_song, child, adult) or self.can_use(Items.song_of_time, child, adult)
+
+    def call_gossip_fairy(self, child, adult):
+        return self.call_gossip_fairy_except_suns(child, adult) or self.can_use(Items.suns_song, child, adult)
+
+    def effective_health(self):
+        multiplier = 10
+        if DamageMultiplierOn:
+            multiplier = DamageMultiplier
+        if self.has_item(Items.double_defense):
+            if (self.hearts() << 3) % (1 << multiplier) > 0:
+                return ((self.hearts() << 3) >> multiplier) + 1
+            return (self.hearts() << 3) >> multiplier
+        else:
+            if (self.hearts() << 2) % (1 << multiplier) > 0:
+                return ((self.hearts() << 2) >> multiplier) + 1
+            return (self.hearts() << 2) >> multiplier
+        
+    def hearts(self):
+        return HealthCapacity / 16
 
     def can_take_damage(self, child, adult):
-        pass
+        return self.can_use(Items.bottle_with_fairy) or self.effective_health() > 1 or self.can_use(Items.nayrus_love)
 
-    def has_fire_source(self, child, adultv):
-        pass
+    def can_open_bomb_grotto(self, child, adult):
+        return self.blast_or_smash(child, adult) and (self.has_item(Items.stone_of_agony, child, adult) or GrottosWithoutAgony)
+    
+    def can_open_storms_grotto(self, child, adult):
+        return self.can_use(Items.song_of_storms, child, adult) and (self.has_item(Items.stone_of_agony, child, adult) or GrottosWithoutAgony)
+    
+    def can_get_night_gs(self, child, adult):
+        return self.can_use(Items.suns_song, child, adult) or not SkullsSunsSong
+
+    def can_break_upper_beehives(self, child, adult):
+        return self.hookshot_or_boomerang(child, adult) or (BombchuBeehives and self.can_use(Items.progressive_bombchus, child, adult))
+    
+    def can_break_lower_beehives(self, child, adult):
+        return self.can_break_upper_beehives(child, adult) or self.can_use(Items.progressive_bombs, child, adult)
+
+    def has_fire_source(self, child, adult):
+        return self.can_use(Items.dins_fire, child, adult) or self.can_use(Items.fire_arrows, child, adult)
+    
+    def has_fire_source_with_torch(self, child, adult):
+        return self.has_fire_source(child, adult) or self.can_use(Items.deku_stick, child, adult)
 
     def can_standing_shield(self, child, adult):
         pass
 
+    def can_spawn_soil_skull(self, child, adult):
+        return child and self.can_use(Items.bottle_with_bugs, child, False)
+
     def blue_fire(self, child, adult):
-        pass
+        return self.can_use(Items.bottle_with_blue_fire, child, adult) or (BlueFireArrows and self.can_use(Items.ice_arrows, child, adult))
 
     def can_break_mud_walls(self, child, adult):
         return self.has_explosives() or self.can_use(Items.megaton_hammer, child, adult) or (BlueFireMudWallsTrick and self.blue_fire())
 
     def has_explosives(self):
+        return self.can_use(Items.progressive_bombs) or self.can_use(Items.progressive_bombchus)
+
+    #TODO BombchusEnabled, BonchuRefill need options setup
+    #Logic.cpp 1006
+    def bombchu_enabled(self):
+        pass
+
+    #Logic.cpp 1011
+    def bombchu_refill(self):
         pass
 
     def can_detonate_bomb_flowers(self, child, adult):
@@ -73,10 +138,113 @@ class Logic:
     def can_hit_eye_targets(self, child, adult):
         return self.can_use(Items.progressive_bow, child, adult) or self.can_use(Items.progressive_slingshot, child, adult)
 
+    #TODO improve this to consider whether the bottle can be emptied
     def has_bottle(self):
         return self.state.has_any([Items.empty_bottle, Items.bottle_with_milk, Items.bottle_with_red_potion, Items.bottle_with_green_potion,
                                   Items.bottle_with_blue_potion, Items.bottle_with_fairy, Items.bottle_with_fish, Items.bottle_with_blue_fire, 
                                   Items.bottle_with_bugs, Items.bottle_with_poe, Items.bottle_with_rutos_letter, Items.bottle_with_big_poe], self.player)
+
+    def ocarina_button_count(self):
+        return self.state.count_from_list([Items.ocarina_a_button, Items.ocarina_c_down_button, Items.ocarina_c_left_button, Items.ocarina_c_right_button, 
+                                           Items.ocarina_c_up_button], self.player)
+
+    def scarecrows_song(self):
+        return self.ocarina_button_count() >= 2
+
+    def mq_water_level(self, level: WaterLevel):
+        match level:
+            case WaterLevel.low:
+                return (CanWaterTempleHigh and CanWaterTempleLowFromHigh) or (CanWaterTempleLowFromMid and CanWaterTempleLowFromHigh)
+            case WaterLevel.low_or_mid:
+                return (CanWaterTempleHigh and CanWaterTempleLowFromHigh) or (CanWaterTempleLowFromHigh and CanWaterTEmpleMiddle) or (CanWaterTempleLowFromMid and CanWaterTempleLowFromHigh)
+            case WaterLevel.mid:
+                return CanWaterTempleLowFromHigh and CanWaterTempleMiddle
+            case WaterLevel.high:
+                return ReachedWaterHighEmblem
+            case WaterLevel.high_or_mid:
+                return ReachedWaterHighEmblem or (CanWaterTempleLowFromHigh and CanWaterTempleMiddle)
+            
+    def can_hit_switch(self, child, adult, distance: EnemyDistance, inWater: bool):
+        hit = False
+        if distance <= EnemyDistance.SHORT_JUMPSLASH:
+            hit = self.can_use(Items.kokiri_sword, child, adult) or self.can_use(Items.megaton_hammer, child, adult)
+        if distance <= EnemyDistance.MASTER_SWORD_JUMPSLASH:
+            hit = hit or self.can_use(Items.master_sword, child, adult)
+        if distance <= EnemyDistance.LONG_JUMPSLASH:
+            hit = hit or self.can_use(Items.biggoron_sword, child, adult) or self.can_use(Items.deku_stick, child, adult)
+        if distance <= EnemyDistance.BOMB_THROW:
+            hit = hit or (not inWater and self.can_use(Items.progressive_bombs, child, adult))
+        if distance <= EnemyDistance.BOOMERANG:
+            hit = hit or self.can_use(Items.boomerang, child, adult)
+        if distance <= EnemyDistance.HOOKSHOT:
+            hit = hit or self.can_use(Items.progressive_hookshot, child, adult)
+        if distance <= EnemyDistance.LONGSHOT:
+            hit = hit or self.can_use(Items.progressive_hookshot, child, adult, 2)
+        if distance <= EnemyDistance.FAR:
+            hit = hit or self.can_use(Items.progressive_slingshot, child, adult) or self.can_use(Items.progressive_bow, child, adult)
+
+    def can_break_pots(self):
+        return True
+
+    def dungeon_count(self):
+        count = 0
+        if DekuTreeClear:
+            count = count + 1
+        if DodongosCavernClear:
+            count = count + 1
+        if JabuJabusBellyClear:
+            count = count + 1
+        if ForestTempleClear:
+            count = count + 1
+        if FireTempleClear:
+            count = count + 1
+        if WaterTempleClear:
+            count = count + 1
+        if SpiritTempleClear:
+            count = count + 1
+        if ShadowTempleClear:
+            count = count + 1
+        return count
+
+    def stone_count(self):
+        count = 0
+        if self.has_item(Items.kokiri_emerald):
+            count = count + 1
+        if self.has_item(Items.goron_ruby):
+            count = count + 1
+        if self.has_item(Items.zora_sapphire):
+            count = count + 1
+        return count
+    
+    def medallion_count(self):
+        count = 0
+        if self.has_item(Items.forest_medallion):
+            count = count + 1
+        if self.has_item(Items.fire_medallion):
+            count = count + 1
+        if self.has_item(Items.water_medallion):
+            count = count + 1
+        if self.has_item(Items.spirit_medallion):
+            count = count + 1
+        if self.has_item(Items.shadow_medallion):
+            count = count + 1
+        if self.has_item(Items.light_medallion):
+            count = count + 1
+        return count
+    
+    def fire_timer(self, child, adult):
+        if self.can_use(Items.goron_tunic, child, adult):
+            return 255
+        if FewerTunicRequirements:
+            return self.hearts() * 8
+        return 0
+    
+    def water_timer(self, child, adult):
+        if self.can_use(Items.zora_tunic, child, adult):
+            return 255
+        if FewerTunicRequirements:
+            return self.hearts() * 8
+        return 0
 
     def has_item(self, name: Items, count: int = 1):
         if "Bottle" in name.value: #Can empty or fill bottles
@@ -190,7 +358,7 @@ class Logic:
             case Items.deku_stick:
                 return child() and (StickPot or DekuBabaSticks) and (not StickBag or has_item(Items.progressive_stick_upgrade))
             case Items.progressive_bombchus:
-                return BombchuRefill and BombchusEnabled
+                return self.bombchu_refill() and self.bombchus_enabled()
             case Items.weird_egg:
                 return child()
             case Items.bottle_with_rutos_letter:

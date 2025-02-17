@@ -235,7 +235,6 @@ class Items(str, Enum):
     deku_nut = "Deku Nut"
     deku_stick = "Deku Stick"
 
-
 major_items = [
     (Items.kokiri_sword, 1, ItemClassification.useful),
     (Items.master_sword, 1, ItemClassification.useful),

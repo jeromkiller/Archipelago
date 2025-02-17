@@ -64,3 +64,10 @@ class Enemies(str, Enum):
     tentacle = "Tentacle"
     bari = "Bari"
     shabom = "Shabom"
+
+class WaterLevel(Enum):
+    low = 1
+    mid = 2
+    high = 4
+    low_or_mid = 3
+    high_or_mid = 6
