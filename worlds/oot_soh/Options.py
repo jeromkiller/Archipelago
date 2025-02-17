@@ -1,12 +1,11 @@
 from Options import *
 
-
 class ClosedForest(Choice):
     """Determines if Kokiri forest can be left for the Lost Woods bridge or the Deku Tree.
 
     On - Kokiri Sword & Deku Shield are required to access the Deku Tree, and completing the Deku Tree is required to access the Lost Woods Bridge Exit.
 
-    Deku Only - Kokiri boy no longer blocks the path to the Bridgte, but Mido still requires the Kokiri Sword andd Deku Shield to access the tree.
+    Deku Only - Kokiri boy no longer blocks the path to the Bridge, but Mido still requires the Kokiri Sword and Deku Shield to access the tree.
 
     Off - Mido no longer blocks the path to the Deku Tree. Kokiri boy no longer blocks the path out of the forest.
     """
@@ -1322,7 +1321,7 @@ soh_option_groups: list[OptionGroup] = [
         start_collapsed=True
     ),
     OptionGroup(
-        "Shuffle Entracnes",
+        "Shuffle Entrances",
         [
             DungeonEntrances,
             BossEntrances,
