@@ -11,7 +11,7 @@ class Logic:
     player: int
     options: SoHOptions
 
-    def __init__(self, player, options):
+    def __init__(self, player: int, options: SoHOptions):
 
         self.player = player
         self.options = options
@@ -19,6 +19,31 @@ class Logic:
         if options.closed_forest.value != ClosedForest.option_on or options.interior_entrances.value != InteriorEntrances.option_off or \
                 options.overworld_entrances.value != OverworldEntrances.option_false:
             self.can_leave_forest = lambda child, adult: True
+        if GrottosWithoutAgony:
+            self.can_open_bomb_grotto = lambda state, child, adult: self.blast_or_smash(state, child, adult)
+            self.can_open_storms_grotto = lambda state, child, adult: self.can_use(state, Items.song_of_storms, child, adult)
+        if options.night_skulls_sun_song.value == NightSkullsExpectSunsSong.option_false:
+            self.can_get_night_gs = lambda state, child, adult: True
+        if BombchuBeehives:
+            self.can_break_upper_beehives = lambda state, child, adult: self.hookshot_or_boomerang(state, child, adult) \
+                    or self.can_use(state, Items.progressive_bombchus, child, adult)
+        if options.blue_fire_arrows.value == BlueFireArrows.option_true:
+            self.blue_fire = lambda state, child, adult: self.can_use(state, Items.bottle_with_blue_fire, child, adult) or self.can_use(state, Items.ice_arrows, child, adult)
+        if BlueFireMudWallsTrick:
+            self.can_break_mud_walls = lambda state, child, adult: self.has_explosives(state) or self.can_use(state, Items.megaton_hammer, child, adult) or self.blue_fire(state, child, adult)
+        if options.bombchu_bag.value == BombchuBag.option_true:
+            self.bombchu_enabled = lambda state: self.has_item(Items.progressive_bombchus)
+        if options.bombchu_drops.value == BombchuDrops.option_true:
+            self.bombchu_refill = lambda state: True
+        if FewerTunicRequirements:
+            def tunic_rule(state, child, adult, item):
+                if self.can_use(state, item, child, adult):
+                    return 255
+                return self.hearts(state) * 8
+            self.fire_timer = lambda state, child, adult: tunic_rule(state, child, adult, Items.goron_tunic)
+            self.water_timer = lambda state, child, adult: tunic_rule(state, child, adult, Items.zora_tunic)
+        if options.shuffle_ocarina_buttons.value == ShuffleOcarinaButtons.option_true:
+            self._can_play_song_helper = lambda state, buttons: self.has_item(state, Items.progressive_ocarina) and state.has_all(buttons, self.player)
 
     def can_be_adult(self, state: CollectionState):
         pass
@@ -51,6 +76,7 @@ class Logic:
     def can_stun_deku(self, state: CollectionState, child, adult):
         return self.can_attack(state, child, adult) or self.can_use(state, Items.deku_nut, child, adult) or self.can_reflect_nuts(state, child, adult) 
 
+    #Overridden to true if entrance rando is on, or closed forest is off
     def can_leave_forest(self, state: CollectionState, child, adult): 
         return adult or DekuTreeClear
     
@@ -61,6 +87,11 @@ class Logic:
         return self.call_gossip_fairy_except_suns(state, child, adult) or self.can_use(state, Items.suns_song, child, adult)
 
     def effective_health(self, state: CollectionState):
+        #TODO when ship starts using damage multiplier in logic, remove these two lines and use the setting
+        DamageMultiplierOn = False
+        DamageMultiplier = -1
+
+
         multiplier = 10
         if DamageMultiplierOn:
             multiplier = DamageMultiplier
@@ -80,16 +111,20 @@ class Logic:
         return self.can_use(state, Items.bottle_with_fairy) or self.effective_health(state) > 1 or self.can_use(state, Items.nayrus_love)
 
     def can_open_bomb_grotto(self, state: CollectionState, child, adult):
-        return self.blast_or_smash(state, child, adult) and (self.has_item(state, Items.stone_of_agony, child, adult) or GrottosWithoutAgony)
+        #return self.blast_or_smash(state, child, adult) and (self.has_item(state, Items.stone_of_agony, child, adult) or GrottosWithoutAgony)
+        return self.blast_or_smash(state, child, adult) and self.has_item(state, Items.stone_of_agony, child, adult)
     
     def can_open_storms_grotto(self, state: CollectionState, child, adult):
-        return self.can_use(state, Items.song_of_storms, child, adult) and (self.has_item(state, Items.stone_of_agony, child, adult) or GrottosWithoutAgony)
+        #return self.can_use(state, Items.song_of_storms, child, adult) and (self.has_item(state, Items.stone_of_agony, child, adult) or GrottosWithoutAgony)
+        return self.can_use(state, Items.song_of_storms, child, adult) and self.has_item(state, Items.stone_of_agony, child, adult)
     
     def can_get_night_gs(self, state: CollectionState, child, adult):
-        return self.can_use(state, Items.suns_song, child, adult) or not SkullsSunsSong
+        #return self.can_use(state, Items.suns_song, child, adult) or not SkullsSunsSong
+        return self.can_use(state, Items.suns_song, child, adult)
 
     def can_break_upper_beehives(self, state: CollectionState, child, adult):
-        return self.hookshot_or_boomerang(state, child, adult) or (BombchuBeehives and self.can_use(state, Items.progressive_bombchus, child, adult))
+        #return self.hookshot_or_boomerang(state, child, adult) or (BombchuBeehives and self.can_use(state, Items.progressive_bombchus, child, adult))
+        return self.hookshot_or_boomerang(state, child, adult)
     
     def can_break_lower_beehives(self, state: CollectionState, child, adult):
         return self.can_break_upper_beehives(state, child, adult) or self.can_use(state, Items.progressive_bombs, child, adult)
@@ -107,10 +142,12 @@ class Logic:
         return child and self.can_use(state, Items.bottle_with_bugs, child, False)
 
     def blue_fire(self, state: CollectionState, child, adult):
-        return self.can_use(state, Items.bottle_with_blue_fire, child, adult) or (BlueFireArrows and self.can_use(state, Items.ice_arrows, child, adult))
+        #return self.can_use(state, Items.bottle_with_blue_fire, child, adult) or (BlueFireArrows and self.can_use(state, Items.ice_arrows, child, adult))
+        return self.can_use(state, Items.bottle_with_blue_fire, child, adult)
 
     def can_break_mud_walls(self, state: CollectionState, child, adult):
-        return self.has_explosives(state) or self.can_use(state, Items.megaton_hammer, child, adult) or (BlueFireMudWallsTrick and self.blue_fire(state))
+        #return self.has_explosives(state) or self.can_use(state, Items.megaton_hammer, child, adult) or (BlueFireMudWallsTrick and self.blue_fire(state))
+        return self.has_explosives(state) or self.can_use(state, Items.megaton_hammer, child, adult)
 
     def has_explosives(self, state: CollectionState):
         return self.can_use(state, Items.progressive_bombs) or self.can_use(state, Items.progressive_bombchus)
@@ -118,11 +155,11 @@ class Logic:
     #TODO BombchusEnabled, BonchuRefill need options setup
     #Logic.cpp 1006
     def bombchu_enabled(self, state: CollectionState):
-        pass
+        return self.has_item(state, Items.progressive_bombs)
 
     #Logic.cpp 1011
     def bombchu_refill(self, state: CollectionState):
-        pass
+        return CouldPlayBowling or CarpetMerchant or BuyingBombchusInLogic
 
     def can_detonate_bomb_flowers(self, state: CollectionState, child, adult):
         return self.can_use(state, Items.progressive_bow, child, adult) or self.has_explosives(state) or self.can_use(state, Items.dins_fire, child, adult)
@@ -244,15 +281,11 @@ class Logic:
     def fire_timer(self, state: CollectionState, child, adult):
         if self.can_use(state, Items.goron_tunic, child, adult):
             return 255
-        if FewerTunicRequirements:
-            return self.hearts(state) * 8
         return 0
     
     def water_timer(self, state: CollectionState, child, adult):
         if self.can_use(state, Items.zora_tunic, child, adult):
             return 255
-        if FewerTunicRequirements:
-            return self.hearts(state) * 8
         return 0
 
     def has_item(self, state: CollectionState, name: Items, count: int = 1):
@@ -263,6 +296,10 @@ class Logic:
         if name in state.prog_items[self.player].keys:
             return state.count(name, self.player) >= count
         return False
+
+    def _can_play_song_helper(self, state: CollectionState, buttons: List[str]):
+        #return self.has_item(state, Items.progressive_ocarina) and (not ButtonShuffle or state.has_all(buttons, self.player))
+        return self.has_item(state, Items.progressive_ocarina)
 
     #can_child and can_adult correlate to whether the particular case can be done in that state. 
     #For instance, a child-only check should have can_child true, can_adult false
@@ -283,7 +320,7 @@ class Logic:
         def has_bottle():
             return self.has_bottle(state)
         def can_play_song(buttons: List[str]):
-            return self.has_item(state, Items.progressive_ocarina) and (not ButtonShuffle or state.has_all(buttons, self.player))
+            return self._can_play_song_helper(state, buttons)
 
         
         #TODO some of these are pascalcase variables, replace them with references to options once options are implemented

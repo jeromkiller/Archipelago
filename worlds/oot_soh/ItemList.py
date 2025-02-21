@@ -478,7 +478,8 @@ other_setting_item_data = [
     (Items.skeleton_key, 1, ItemClassification.useful),
     (Items.deku_stick_bag, 1, ItemClassification.useful),
     (Items.deku_nut_bag, 1, ItemClassification.useful),
-    (Items.triforce, 1, ItemClassification.useful) 
+    (Items.triforce, 1, ItemClassification.useful),
+    (Items.stone_of_agony, 1, lambda options: ItemClassification.progression if GrottosWithoutAgony else ItemClassification.useful)
 ]
 
 non_useful_item_data = [

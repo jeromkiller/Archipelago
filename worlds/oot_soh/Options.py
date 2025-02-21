@@ -1041,7 +1041,7 @@ class BombchuDrops(Toggle):
     display_name = "Bombchu Drops"
 
 
-class BlueFireArrors(Toggle):
+class BlueFireArrows(Toggle):
     """Ice Arrows act like Blue Fire, making them able to melt red ice. 
     Item placement logic will respect this option, so it might be required to use this to progress."""
     display_name = "Blue Fire Arrors"
@@ -1264,7 +1264,7 @@ class SoHOptions(PerGameCommonOptions):
     full_wallets: FullWallets
     bombchu_bag: BombchuBag
     bombchu_drops: BombchuDrops
-    blue_fire_arrors: BlueFireArrors
+    blue_fire_arrows: BlueFireArrows
     sunlight_arrors: SunlightArrors
     infinite_upgrades: InfiniteUpgrades
     skeleton_key: SkeletonKey
@@ -1449,7 +1449,7 @@ soh_option_groups: list[OptionGroup] = [
             FullWallets,
             BombchuBag,
             BombchuDrops,
-            BlueFireArrors,
+            BlueFireArrows,
             SunlightArrors,
             InfiniteUpgrades,
             SkeletonKey
