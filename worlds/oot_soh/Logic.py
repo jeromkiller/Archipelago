@@ -11,6 +11,16 @@ class Logic:
     state: CollectionState
     player: int
     options: SoHOptions
+
+    def __init__(self, state, player, options):
+        self.state = state
+        self.player = player
+        self.options = options
+        #Options
+        if options.closed_forest.value != ClosedForest.option_on or options.interior_entrances.value != InteriorEntrances.option_off or \
+                options.overworld_entrances.value != OverworldEntrances.option_false:
+            self.can_leave_forest = lambda child, adult: True
+
     def can_be_adult(self):
         pass
 
@@ -43,8 +53,7 @@ class Logic:
         return self.can_attack(child, adult) or self.can_use(Items.deku_nut, child, adult) or self.can_reflect_nuts(child, adult) 
 
     def can_leave_forest(self, child, adult): 
-        return self.options.closed_forest.value != ClosedForest.option_on or adult or DekuTreeClear or self.options.interior_entrances.value != InteriorEntrances.option_off \
-            or self.options.overworld_entrances.value != OverworldEntrances.option_false
+        return adult or DekuTreeClear
     
     def call_gossip_fairy_except_suns(self, child, adult):
         return self.can_use(Items.zeldas_lullaby, child, adult) or self.can_use(Items.eponas_song, child, adult) or self.can_use(Items.song_of_time, child, adult)
