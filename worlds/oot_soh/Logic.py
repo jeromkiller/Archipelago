@@ -1,6 +1,6 @@
 #from .Items import *
 #from .Locations import *
-from .Options import SoHOptions
+from .Options import *
 from BaseClasses import CollectionState
 from typing import List
 from .ItemList import Items
@@ -42,8 +42,9 @@ class Logic:
     def can_stun_deku(self, child, adult):
         return self.can_attack(child, adult) or self.can_use(Items.deku_nut, child, adult) or self.can_reflect_nuts(child, adult) 
 
-    def can_leave_forest(self, child, adult):
-        return ClosedForestOn or adult or DekuTreeClear or ShuffleInteriorEntrances or ShuffleOverworldEntrances
+    def can_leave_forest(self, child, adult): 
+        return self.options.closed_forest.value != ClosedForest.option_on or adult or DekuTreeClear or self.options.interior_entrances.value != InteriorEntrances.option_off \
+            or self.options.overworld_entrances.value != OverworldEntrances.option_false
     
     def call_gossip_fairy_except_suns(self, child, adult):
         return self.can_use(Items.zeldas_lullaby, child, adult) or self.can_use(Items.eponas_song, child, adult) or self.can_use(Items.song_of_time, child, adult)
