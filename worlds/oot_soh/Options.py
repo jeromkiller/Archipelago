@@ -997,7 +997,7 @@ class ExtraHints(OptionSet):
     valid_keys = [
         "ToT Altar",
         "Ganondorf",
-        "Sheik Light Arror",
+        "Sheik Light Arrow",
         "Dampe's Diary",
         "Greg the Green Rupee",
         "Hyrule Loach",
@@ -1044,13 +1044,13 @@ class BombchuDrops(Toggle):
 class BlueFireArrows(Toggle):
     """Ice Arrows act like Blue Fire, making them able to melt red ice. 
     Item placement logic will respect this option, so it might be required to use this to progress."""
-    display_name = "Blue Fire Arrors"
+    display_name = "Blue Fire Arrows"
 
 
-class SunlightArrors(Toggle):
+class SunlightArrows(Toggle):
     """Light Arrows can be used to light up the sun switches instead of using the Mirror Shield.
     Item placement logic will respect this option, so it might be required to use this to progress."""
-    display_name = "Sunlight Arrors"
+    display_name = "Sunlight Arrows"
 
 
 class InfiniteUpgrades(Choice):
@@ -1265,7 +1265,7 @@ class SoHOptions(PerGameCommonOptions):
     bombchu_bag: BombchuBag
     bombchu_drops: BombchuDrops
     blue_fire_arrows: BlueFireArrows
-    sunlight_arrors: SunlightArrors
+    sunlight_arrows: SunlightArrows
     infinite_upgrades: InfiniteUpgrades
     skeleton_key: SkeletonKey
     logic: Logic
@@ -1450,7 +1450,7 @@ soh_option_groups: list[OptionGroup] = [
             BombchuBag,
             BombchuDrops,
             BlueFireArrows,
-            SunlightArrors,
+            SunlightArrows,
             InfiniteUpgrades,
             SkeletonKey
         ]
