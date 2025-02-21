@@ -1,4 +1,5 @@
 from Options import *
+from .LogicTricks import normalized_name_tricks
 
 
 class ClosedForest(Choice):
@@ -1088,7 +1089,10 @@ class AllLocationsReachable(Accessibility):
 class EnabledTricks(OptionSet):
     """TODO"""
     display_name = "Enabled Tricks"
-    visibility = Visibility.none
+    valid_keys = list(normalized_name_tricks.keys())
+    valid_keys_casefold = True
+    visibility = Visibility.complex_ui
+
 
 
 class ExcludedLocations(ExcludeLocations):
@@ -1461,7 +1465,7 @@ soh_option_groups: list[OptionGroup] = [
         [
             Logic,
             AllLocationsReachable,
-            # EnabledTricks,
+            EnabledTricks,
         ]
     ),
     OptionGroup(
