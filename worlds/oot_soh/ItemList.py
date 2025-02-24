@@ -236,27 +236,27 @@ class Items(str, Enum):
     deku_stick = "Deku Stick"
 
 major_items = [
-    (Items.kokiri_sword, 1, ItemClassification.useful),
-    (Items.master_sword, 1, ItemClassification.useful),
-    (Items.giants_knife, 1, ItemClassification.useful),
-    (Items.biggoron_sword, 1, ItemClassification.useful),
-    (Items.deku_shield, 1, ItemClassification.useful),
-    (Items.hylian_shield, 1, ItemClassification.useful),
+    (Items.kokiri_sword, 1, ItemClassification.progression),
+    (Items.master_sword, 1, ItemClassification.progression),
+    (Items.giants_knife, 1, ItemClassification.progression),
+    (Items.biggoron_sword, 1, ItemClassification.progression),
+    (Items.deku_shield, 1, ItemClassification.progression),
+    (Items.hylian_shield, 1, ItemClassification.progression),
     (Items.mirror_shield, 1, ItemClassification.useful),
-    (Items.goron_tunic, 1, ItemClassification.useful),
-    (Items.zora_tunic, 1, ItemClassification.useful),
+    (Items.goron_tunic, 1, ItemClassification.progression),
+    (Items.zora_tunic, 1, ItemClassification.progression),
     (Items.iron_boots, 1, ItemClassification.useful),
     (Items.hover_boots, 1, ItemClassification.useful),
-    (Items.boomerang, 1, ItemClassification.useful),
+    (Items.boomerang, 1, ItemClassification.progression),
     (Items.lens_of_truth, 1, ItemClassification.useful),
-    (Items.megaton_hammer, 1, ItemClassification.useful),
-    (Items.stone_of_agony, 1, ItemClassification.useful),
-    (Items.dins_fire, 1, ItemClassification.useful),
+    (Items.megaton_hammer, 1, ItemClassification.progression),
+    (Items.stone_of_agony, 1, lambda options: ItemClassification.progression if "Hidden Grottos without Stone of Agony".casefold() not in options.enabled_tricks.values else ItemClassification.useful)
+    (Items.dins_fire, 1, ItemClassification.progression),
     (Items.farores_wind, 1, ItemClassification.useful),
-    (Items.nayrus_love, 1, ItemClassification.useful),
-    (Items.fire_arrows, 1, ItemClassification.useful),
-    (Items.ice_arrows, 1, ItemClassification.useful),
-    (Items.light_arrows, 1, ItemClassification.useful),
+    (Items.nayrus_love, 1, ItemClassification.progression), #can_take_damage()
+    (Items.fire_arrows, 1, ItemClassification.progression),
+    (Items.ice_arrows, 1, ItemClassification.progression),
+    (Items.light_arrows, 1, ItemClassification.progression),
     (Items.gerudo_membership_card, 1, ItemClassification.useful),
     (Items.magic_bean, 1, ItemClassification.useful),
     (Items.magic_bean_pack, 1, ItemClassification.useful),
@@ -280,22 +280,22 @@ skulltula_data = [
     (Items.gold_skulltula_token, 100, ItemClassification.useful)
 ]
 progressive_item_data = [
-    (Items.progressive_stick_upgrade, (lambda options: 2), ItemClassification.useful),
-    (Items.progressive_nut_upgrade, (lambda options: 2), ItemClassification.useful),
-    (Items.progressive_bombs, (lambda options: 3), ItemClassification.useful),
-    (Items.progressive_bow, (lambda options: 3), ItemClassification.useful),
-    (Items.progressive_slingshot, (lambda options: 3), ItemClassification.useful),
-    (Items.progressive_ocarina, (lambda options: 1), ItemClassification.useful),
-    (Items.progressive_hookshot, (lambda options: 2), ItemClassification.useful),
-    (Items.progressive_strength, (lambda options: 3), ItemClassification.useful),
+    (Items.progressive_stick_upgrade, (lambda options: 2), ItemClassification.useful), #don't need one to get sticks
+    (Items.progressive_nut_upgrade, (lambda options: 2), ItemClassification.useful), #don't need one to get sticks
+    (Items.progressive_bombs, (lambda options: 3), ItemClassification.progression),
+    (Items.progressive_bow, (lambda options: 3), ItemClassification.progression),
+    (Items.progressive_slingshot, (lambda options: 3), ItemClassification.progression),
+    (Items.progressive_ocarina, (lambda options: 1), ItemClassification.progression),
+    (Items.progressive_hookshot, (lambda options: 2), ItemClassification.progression),
+    (Items.progressive_strength, (lambda options: 3), ItemClassification.progression),
     (Items.progressive_wallet, (lambda options: 2), ItemClassification.useful),
     (Items.progressive_scale, (lambda options: 2), ItemClassification.useful),
-    (Items.progressive_magic_meter, (lambda options: 2), ItemClassification.useful),
-    (Items.progressive_bombchus, (lambda options: 1), ItemClassification.useful),
-    (Items.progressive_goron_sword, (lambda options: 0), ItemClassification.useful)
+    (Items.progressive_magic_meter, (lambda options: 2), ItemClassification.progression),
+    (Items.progressive_bombchus, (lambda options: 1), ItemClassification.progression),
+    (Items.progressive_goron_sword, (lambda options: 0), ItemClassification.progression)
 ]
 bottles_data = [
-    (Items.empty_bottle, 1, ItemClassification.useful),
+    (Items.empty_bottle, 1, ItemClassification.progression),
     (Items.bottle_with_milk, 1, ItemClassification.useful),
     (Items.bottle_with_red_potion, 1, ItemClassification.useful),
     (Items.bottle_with_green_potion, 1, ItemClassification.useful),
@@ -404,15 +404,15 @@ key_rings_data = [
 ]
 
 dungeon_reward_data = [
-    (Items.kokiri_emerald, 1, (lambda options: ItemClassification.useful)),
-    (Items.goron_ruby, 1, (lambda options: ItemClassification.useful)),
-    (Items.zora_sapphire, 1, (lambda options: ItemClassification.useful)),
-    (Items.forest_medallion, 1, ItemClassification.useful),
-    (Items.fire_medallion, 1, ItemClassification.useful),
-    (Items.water_medallion, 1, ItemClassification.useful),
-    (Items.spirit_medallion, 1, (lambda options: ItemClassification.useful)),
-    (Items.shadow_medallion, 1, (lambda options: ItemClassification.useful)),
-    (Items.light_medallion, 1, (lambda options: ItemClassification.useful))
+    (Items.kokiri_emerald, 1, (lambda options: ItemClassification.progression)),
+    (Items.goron_ruby, 1, (lambda options: ItemClassification.progression)),
+    (Items.zora_sapphire, 1, (lambda options: ItemClassification.progression)),
+    (Items.forest_medallion, 1, ItemClassification.progression),
+    (Items.fire_medallion, 1, ItemClassification.progression),
+    (Items.water_medallion, 1, ItemClassification.progression),
+    (Items.spirit_medallion, 1, (lambda options: ItemClassification.progression)),
+    (Items.shadow_medallion, 1, (lambda options: ItemClassification.progression)),
+    (Items.light_medallion, 1, (lambda options: ItemClassification.progression))
 ]
 
 filler_data = [
@@ -479,7 +479,6 @@ other_setting_item_data = [
     (Items.deku_stick_bag, 1, ItemClassification.useful),
     (Items.deku_nut_bag, 1, ItemClassification.useful),
     (Items.triforce, 1, ItemClassification.useful),
-    (Items.stone_of_agony, 1, lambda options: ItemClassification.progression if GrottosWithoutAgony else ItemClassification.useful)
 ]
 
 non_useful_item_data = [

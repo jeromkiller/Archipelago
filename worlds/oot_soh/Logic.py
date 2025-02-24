@@ -2,7 +2,7 @@
 #from .Locations import *
 from .Options import *
 from BaseClasses import CollectionState
-from typing import List
+from typing import List, Set
 from .ItemList import Items
 
 from .LogicDataStructures import EnemyDistance, Enemies, WaterLevel
@@ -12,30 +12,31 @@ class Logic:
     options: SoHOptions
 
     def __init__(self, player: int, options: SoHOptions):
-
         self.player = player
         self.options = options
+        self.tricks = options.enabled_tricks.value
         #Options
+        tricks = options.enabled_tricks.value
         if options.closed_forest.value != ClosedForest.option_on or options.interior_entrances.value != InteriorEntrances.option_off or \
                 options.overworld_entrances.value != OverworldEntrances.option_false:
             self.can_leave_forest = lambda child, adult: True
-        if GrottosWithoutAgony:
+        if "Hidden Grottos without Stone of Agony".casefold() in tricks:
             self.can_open_bomb_grotto = lambda state, child, adult: self.blast_or_smash(state, child, adult)
             self.can_open_storms_grotto = lambda state, child, adult: self.can_use(state, Items.song_of_storms, child, adult)
         if options.night_skulls_sun_song.value == NightSkullsExpectSunsSong.option_false:
             self.can_get_night_gs = lambda state, child, adult: True
-        if BombchuBeehives:
+        if "Bombchu Beehives".casefold() in tricks:
             self.can_break_upper_beehives = lambda state, child, adult: self.hookshot_or_boomerang(state, child, adult) \
                     or self.can_use(state, Items.progressive_bombchus, child, adult)
         if options.blue_fire_arrows.value == BlueFireArrows.option_true:
             self.blue_fire = lambda state, child, adult: self.can_use(state, Items.bottle_with_blue_fire, child, adult) or self.can_use(state, Items.ice_arrows, child, adult)
-        if BlueFireMudWallsTrick:
+        if "Break Mud Walls with Blue Fire" in tricks:
             self.can_break_mud_walls = lambda state, child, adult: self.has_explosives(state) or self.can_use(state, Items.megaton_hammer, child, adult) or self.blue_fire(state, child, adult)
         if options.bombchu_bag.value == BombchuBag.option_true:
             self.bombchu_enabled = lambda state: self.has_item(Items.progressive_bombchus)
         if options.bombchu_drops.value == BombchuDrops.option_true:
             self.bombchu_refill = lambda state: True
-        if FewerTunicRequirements:
+        if "Fewer Tunic Requirements" in tricks:
             def tunic_rule(state, child, adult, item):
                 if self.can_use(state, item, child, adult):
                     return 255
@@ -44,6 +45,10 @@ class Logic:
             self.water_timer = lambda state, child, adult: tunic_rule(state, child, adult, Items.zora_tunic)
         if options.shuffle_ocarina_buttons.value == ShuffleOcarinaButtons.option_true:
             self._can_play_song_helper = lambda state, buttons: self.has_item(state, Items.progressive_ocarina) and state.has_all(buttons, self.player)
+        if "Child Dead Hand without Kokiri Sword".casefold() in options.enabled_tricks.value:
+            self._botw_child_dead_hand = True
+        if "Gerudo's Fortress Warriors with Difficult Weapons".casefold() in options.enabled_tricks.value:
+            self._gf_warrior_with_difficult_weapon = True
 
     def can_be_adult(self, state: CollectionState):
         pass
@@ -297,7 +302,7 @@ class Logic:
             return state.count(name, self.player) >= count
         return False
 
-    def _can_play_song_helper(self, state: CollectionState, buttons: List[str]):
+    def _can_play_song_helper(self, state: CollectionState, buttons: List[Items]):
         #return self.has_item(state, Items.progressive_ocarina) and (not ButtonShuffle or state.has_all(buttons, self.player))
         return self.has_item(state, Items.progressive_ocarina)
 
@@ -465,10 +470,10 @@ class Logic:
 
 
     def has_boss_soul(self, state: CollectionState, name: str):
-        if not ShuffleBossSouls:
+        if self.options.shuffle_boss_souls == ShuffleBossSouls.option_off:
             return True
         if name == Items.ganons_soul:
-            if ShuffleGanonBossSoul: #In ship it's a set of three options: no shuffle, shuffle boss souls, shuffle boss + ganon souls 
+            if self.options.shuffle_boss_souls == ShuffleBossSouls.option_with_ganon: #In ship it's a set of three options: no shuffle, shuffle boss souls, shuffle boss + ganon souls 
                 return state.has(Items.ganons_soul, self.player)
             else:
                 return True
@@ -560,6 +565,9 @@ class Logic:
                 return False
             case _:
                 return False
+
+    _botw_child_dead_hand = False
+    _gf_warrior_with_difficult_weapon = False
 
     #Child and adult refer to accessibility at those ages
     def can_kill_enemy(self, state: CollectionState, enemy: str, child: bool, adult: bool, distance: EnemyDistance = EnemyDistance.CLOSE, onWallOrFloor: bool = True, quantity: int = 1, timer: bool = False, inWater: bool = False):
@@ -654,7 +662,7 @@ class Logic:
                 return self.blast_or_smash(state, child, adult) or can_use(Items.progressive_bow) or ((self.can_jumpslash_except_hammer(state, child, adult) \
                 or can_use(Items.progressive_slingshot)) and (can_use(Items.deku_nut) or self.hookshot_or_boomerang(state, child, adult) or self.can_standing_shield(state, child, adult)))
             case Enemies.dead_hand:
-                return can_use(Items.kokiri_sword) or can_use(Items.master_sword) or can_use(Items.biggoron_sword) or (can_use(Items.deku_stick) and BotwChildDeadHand)
+                return can_use(Items.kokiri_sword) or can_use(Items.master_sword) or can_use(Items.biggoron_sword) or (can_use(Items.deku_stick) and self._botw_child_dead_hand)
             case Enemies.withered_deku_baba:
                 return can_use(Items.kokiri_sword) or can_use(Items.master_sword) or can_use(Items.biggoron_sword) or can_use(Items.boomerang)
             case Enemies.like_like:
@@ -694,7 +702,7 @@ class Logic:
                 return self.can_jumpslash(state, child, adult) or can_use(Items.progressive_bow) or can_use(Items.progressive_slingshot) or can_use(Items.progressive_bombchus) or \
                 can_use(Items.dins_fire) or (can_use(Items.progressive_bombs) and (can_use(Items.deku_nut) or can_use(Items.progressive_hookshot) or can_use(Items.boomerang)))
             case Enemies.gerudo_warrior:
-                return self.can_jumpslash(state, child, adult) or can_use(Items.progressive_bow) or (GFWarriorWithDifficultWeapon and (can_use(Items.progressive_slingshot) or can_use(Items.progressive_bombchus)))
+                return self.can_jumpslash(state, child, adult) or can_use(Items.progressive_bow) or (self._gf_warrior_with_difficult_weapon and (can_use(Items.progressive_slingshot) or can_use(Items.progressive_bombchus)))
             case Enemies.gibdo:
                 return self.can_jumpslash(state, child, adult) or can_use(Items.dins_fire)
             case Enemies.redead:
@@ -707,7 +715,7 @@ class Logic:
             case Enemies.green_bubble:
                 return self.can_jumpslash(state, child, adult) or can_use(Items.progressive_bow) or can_use(Items.progressive_slingshot) or self.has_explosives(state)
             case Enemies.dinolfos:
-                return self.can_jumpslash(state, child, adult) or can_use(Items.progressive_bow) or can_use(Items.progressive_slingshot) or (not Timer and can_use(Items.progressive_bombchus))
+                return self.can_jumpslash(state, child, adult) or can_use(Items.progressive_bow) or can_use(Items.progressive_slingshot) or (not timer and can_use(Items.progressive_bombchus))
             case Enemies.torch_slug:
                 return self.can_jumpslash(state, child, adult) or self.has_explosives(state) or can_use(Items.progressive_bow)
             case Enemies.freezard:
