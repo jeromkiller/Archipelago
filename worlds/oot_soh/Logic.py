@@ -4,38 +4,55 @@ from .Options import *
 from BaseClasses import CollectionState
 from typing import List, Set
 from .ItemList import Items
-
 from .LogicDataStructures import EnemyDistance, Enemies, WaterLevel
 
 class Logic:
     player: int
     options: SoHOptions
+    tricks: Set[str] #Do we need to save this?
 
     def __init__(self, player: int, options: SoHOptions):
         self.player = player
         self.options = options
-        self.tricks = options.enabled_tricks.value
+        self.tricks = options.enabled_tricks.value #Do we need to save this?
         #Options
+        #In order to read each option a minimal amount of times, the helper functions will be changed based on the options.
         tricks = options.enabled_tricks.value
+        #Set up starting heart count for fire/water timer purposes
+        starting_hearts_amount: int = options.starting_hearts.value
+        self._starting_hearts = lambda: starting_hearts_amount
+        #If starting as an adult, you need ToT access to be child, not the other way around
+        if options.starting_age == StartingAge.option_adult:
+            self.can_be_child = lambda state: state.can_reach_region("Temple of Time", self.player) #TODO make sure this is the proper name for ToT
+            self.can_be_adult = lambda state: True
+        #If closed forest isn't on, or entrance rando is on, then you can leave the forest.
         if options.closed_forest.value != ClosedForest.option_on or options.interior_entrances.value != InteriorEntrances.option_off or \
                 options.overworld_entrances.value != OverworldEntrances.option_false:
             self.can_leave_forest = lambda child, adult: True
+        #If you don't need agony for grottos, remove agony from the requirements
         if "Hidden Grottos without Stone of Agony".casefold() in tricks:
             self.can_open_bomb_grotto = lambda state, child, adult: self.blast_or_smash(state, child, adult)
             self.can_open_storms_grotto = lambda state, child, adult: self.can_use(state, Items.song_of_storms, child, adult)
+        #If waiting for night for skulltulas is in logic, then we don't need sun's song for it
         if options.night_skulls_sun_song.value == NightSkullsExpectSunsSong.option_false:
             self.can_get_night_gs = lambda state, child, adult: True
+        #If bombchuing beehives is allowed, then add it to the options 
         if "Bombchu Beehives".casefold() in tricks:
             self.can_break_upper_beehives = lambda state, child, adult: self.hookshot_or_boomerang(state, child, adult) \
                     or self.can_use(state, Items.progressive_bombchus, child, adult)
+        #If blue fire arrows are enabled, then they are a source of blue fire
         if options.blue_fire_arrows.value == BlueFireArrows.option_true:
             self.blue_fire = lambda state, child, adult: self.can_use(state, Items.bottle_with_blue_fire, child, adult) or self.can_use(state, Items.ice_arrows, child, adult)
+        #If blue fire on mud walls is enabled, add it. Important to add AFTER blue fire arrows.
         if "Break Mud Walls with Blue Fire" in tricks:
             self.can_break_mud_walls = lambda state, child, adult: self.has_explosives(state) or self.can_use(state, Items.megaton_hammer, child, adult) or self.blue_fire(state, child, adult)
+        #Bombchu bag option makes bombchus come from a dedicated bag item. 
         if options.bombchu_bag.value == BombchuBag.option_true:
             self.bombchu_enabled = lambda state: self.has_item(Items.progressive_bombchus)
+        #If bombchu drops are enabled, you can always refill them by using bombchus on grass to get bombchus
         if options.bombchu_drops.value == BombchuDrops.option_true:
             self.bombchu_refill = lambda state: True
+        #If Fewer Tunic Requirements is on, the game considers the player's health and timer duration. 255 is enough time for any item, so that is enough to return for having a tunic
         if "Fewer Tunic Requirements" in tricks:
             def tunic_rule(state, child, adult, item):
                 if self.can_use(state, item, child, adult):
@@ -43,18 +60,22 @@ class Logic:
                 return self.hearts(state) * 8
             self.fire_timer = lambda state, child, adult: tunic_rule(state, child, adult, Items.goron_tunic)
             self.water_timer = lambda state, child, adult: tunic_rule(state, child, adult, Items.zora_tunic)
+        #If shuffle ocarina buttons is on, then we need to consider if we have the buttons to play a song as well as the ocarina
         if options.shuffle_ocarina_buttons.value == ShuffleOcarinaButtons.option_true:
             self._can_play_song_helper = lambda state, buttons: self.has_item(state, Items.progressive_ocarina) and state.has_all(buttons, self.player)
-        if "Child Dead Hand without Kokiri Sword".casefold() in options.enabled_tricks.value:
+        #If we allow child to kill dead hand with deku sticks, then this change allows that. See can_kill_enemy Dead Hand case
+        if "Child Dead Hand without Kokiri Sword".casefold() in tricks:
             self._botw_child_dead_hand = True
-        if "Gerudo's Fortress Warriors with Difficult Weapons".casefold() in options.enabled_tricks.value:
+        #Similarly to the above, this result is and'd together with the relevant item conditions, so if this is set to True, logic considers those items sufficient. 
+        if "Gerudo's Fortress Warriors with Difficult Weapons".casefold() in tricks:
             self._gf_warrior_with_difficult_weapon = True
 
     def can_be_adult(self, state: CollectionState):
-        pass
+        return state.can_reach_region("Temple of Time", self.player)
+        #TODO once location access is complete, make sure this is actually ToT
 
     def can_be_child(self, state: CollectionState):
-        return True #TODO some settings allow starting as adult to build a logical seed, figure those out
+        return True
 
     def can_attack(self, state: CollectionState, child, adult):
         return self.can_damage(state, child, adult) or self.can_use(state, Items.boomerang, child, adult) or self.can_use(state, Items.progressive_hookshot, child, adult)
@@ -110,7 +131,12 @@ class Logic:
             return (self.hearts(state) << 2) >> multiplier
         
     def hearts(self, state: CollectionState):
-        return HealthCapacity / 16
+        return (state.count(Items.piece_of_heart) + state.count(Items.piece_of_heart_winner)) / 4 + state.count(Items.heart_container) + self._starting_hearts()
+        #return HealthCapacity / 16
+
+    #Overridden based on settings
+    def _starting_hearts(self):
+        return 3
 
     def can_take_damage(self, state: CollectionState, child, adult):
         return self.can_use(state, Items.bottle_with_fairy) or self.effective_health(state) > 1 or self.can_use(state, Items.nayrus_love)

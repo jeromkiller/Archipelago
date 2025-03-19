@@ -1284,7 +1284,7 @@ class SoHOptions(PerGameCommonOptions):
     starts_with_sticks: StartsWithSticks
     starts_with_nuts: StartsWithNuts
     starting_tokens: StartingTokens
-    Starting_hearts: StartingHearts
+    starting_hearts: StartingHearts
     starting_songs: StartingSongs
 
 
