@@ -1319,7 +1319,6 @@ soh_option_groups: list[OptionGroup] = [
             BridgeStones,
             BridgeMedallions,
             BridgeRewards,
-            BridgeRewards,
             BridgeToken
         ],
         start_collapsed=True
