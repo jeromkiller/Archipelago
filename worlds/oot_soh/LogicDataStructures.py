@@ -1,9 +1,13 @@
-from enum import Enum
+from enum import Enum, Flag, auto
 from functools import total_ordering
 
-#An estimate of how far the enemy is from Link in the given location
+
+# NB: `total_ordering` has performance implications, determine if manual implementation
+# of the operators would be beneficial.
 @total_ordering
 class EnemyDistance(Enum):
+    """An estimate of how far the enemy is from Link in the given location."""
+
     CLOSE = 1
     SHORT_JUMPSLASH = 2
     MASTER_SWORD_JUMPSLASH = 3
@@ -14,13 +18,20 @@ class EnemyDistance(Enum):
     LONGSHOT = 8
     FAR = 9
 
-    def __lt__(self, other):
-        if self.__class is other.__class:
-            return self.value < other.value
-        return NotImplemented
-    
-#The enemies which are used in logic rules
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, EnemyDistance):
+            return NotImplemented
+        return self.value == other.value
+
+    def __lt__(self, other) -> bool:
+        if not isinstance(other, EnemyDistance):
+            return NotImplemented
+        return self.value < other.value
+
+
 class Enemies(str, Enum):
+    """The enemies which are used in logic rules."""
+
     gold_skulltula = "Gold Skulltula"
     gohma_larva = "Gohma Larva"
     mad_scrub = "Mad Scrub"
@@ -65,9 +76,12 @@ class Enemies(str, Enum):
     bari = "Bari"
     shabom = "Shabom"
 
-class WaterLevel(Enum):
-    low = 1
-    mid = 2
-    high = 4
-    low_or_mid = 3
-    high_or_mid = 6
+
+class WaterLevel(Flag):
+    """Represents the logical access of the Water Temple's water level locations."""
+
+    low = auto()
+    mid = auto()
+    high = auto()
+    low_or_mid = low | mid
+    high_or_mid = high | mid
