@@ -165,6 +165,8 @@ class Items(str, Enum):
     blue_rupee = "Blue Rupee"
     red_rupee = "Red Rupee"
     purple_rupee = "Purple Rupee"
+    huge_rupee = "Huge Rupee"
+    greg_the_green_rupee = "Greg the Green Rupee"
     ice_trap = "Ice Trap"
     milk = "Milk"
     fish = "Fish"
@@ -213,22 +215,10 @@ class Items(str, Enum):
     deku_stick_bag = "Deku Stick Bag"
     deku_nut_bag = "Deku Nut Bag"
     triforce = "Triforce"
-    recovery_heart = "Recovery Heart"
-    bombs_5 = "Bombs (5)"
-    bombs_10 = "Bombs (10)"
-    arrows_5 = "Arrows (5)"
-    arrows_10 = "Arrows (10)"
-    blue_rupee = "Blue Rupee"
-    red_rupee = "Red Rupee"
-    purple_rupee = "Purple Rupee"
-    huge_rupee = "Huge Rupee"
-    greg_the_green_rupee = "Greg the Green Rupee"
-    huge_rupee = "Huge Rupee"
     piece_of_heart = "Piece of Heart"
     heart_container = "Heart Container"
     piece_of_heart_winner = "Piece of Heart (WINNER)"
     green_rupee_loser = "Green Rupee (LOSER)"
-    poachers_saw = "Poacher's Saw"
 
     #Not strictly AP items, but used in logic
     epona = "Epona"
@@ -250,7 +240,7 @@ major_items = [
     (Items.boomerang, 1, ItemClassification.progression),
     (Items.lens_of_truth, 1, ItemClassification.useful),
     (Items.megaton_hammer, 1, ItemClassification.progression),
-    (Items.stone_of_agony, 1, lambda options: ItemClassification.progression if "Hidden Grottos without Stone of Agony".casefold() not in options.enabled_tricks.values else ItemClassification.useful)
+    (Items.stone_of_agony, 1, lambda options: ItemClassification.progression if "Hidden Grottos without Stone of Agony".casefold() not in options.enabled_tricks.values else ItemClassification.useful),
     (Items.dins_fire, 1, ItemClassification.progression),
     (Items.farores_wind, 1, ItemClassification.useful),
     (Items.nayrus_love, 1, ItemClassification.progression), #can_take_damage()
