@@ -5,3 +5,5 @@ class Locations:
     locations = [None]
     ids_by_name = {}
 
+class SoHLocation(Location):
+    game = "Ocarina of Time (SoH)"

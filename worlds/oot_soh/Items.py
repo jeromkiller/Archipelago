@@ -2,10 +2,13 @@ from BaseClasses import CollectionState, MultiWorld, Item, ItemClassification
 from .ItemList import *
 from .Options import *
 
+class SoHItem(Item):
+    game = "Ocarina of Time (SoH)"
+
 class Items:
     _next_id = 1
 
-    all_id_by_name = {}
+    all_id_by_name = {item[0]: id for id, item in enumerate(all_items_data)}
     #Keys are ids for this
     items_by_id = []
     names_by_id = []

@@ -1,8 +1,12 @@
+from typing import List, Dict, Any
+
 from worlds.AutoWorld import World, WebWorld
-from .Locations import Locations
-from .Items import Items
+from .Locations import Locations, SoHLocation
+from .LocationList import loc_id_by_name
+from .Items import Items, SoHItem
+from .ItemList import all_items_data, non_filler_data, filler_data
 from .Options import SoHOptions, soh_option_groups
-from BaseClasses import Tutorial
+from BaseClasses import Tutorial, Item, ItemClassification, Region
 
 class SoHWebWorld(WebWorld):
     theme = "grass"
@@ -33,6 +37,51 @@ class SoHWorld(World):
     # Sets the starting region to "Root" instead of menu
     origin_region_name = "Root"
     required_client_version = (0, 5, 1)
-    Items.initialize_item_id_mapping()
+    #Items.initialize_item_id_mapping(options)
     item_name_to_id = Items.all_id_by_name
-    #location_name_to_id
+
+    location_name_to_id = loc_id_by_name
+
+    def create_item(self, name: str) -> SoHItem:
+        num, classification = all_items_data[name]
+        id = Items.all_id_by_name[name]
+        return SoHItem(name, classification, id, self.player)
+    
+    def create_items(self) -> None:
+        item_pool: List[SoHItem] = list()
+        num_location = len(Locations.locations)
+
+        # add non filler data
+        for name, num, classification in non_filler_data:
+            item = self.create_item(name)
+            if(num < 1):
+                continue    # idk if this can happen
+            item_group = (item for _ in range(num))
+            item_pool.extend(item_group)
+
+        while len(num_location) != len(item_pool):
+            # just fill with recovery hearts for now
+            # It would be better to randomize these
+            item_pool.append(SoHItem(Items.recovery_heart, ItemClassification.filler, Items.all_id_by_name[name], self.player))
+
+        self.multiworld.itempool += item_pool
+
+    def create_regions(self):
+        menu_region = Region("Root", self.player, self.multiworld)
+        menu_region.add_exits("The Game")
+        self.multiworld.regions.append(menu_region)
+
+        game_region = Region("The Game", self.player, self.multiworld)
+        for location_name in Locations.locations:
+            location_id = Locations.ids_by_name[location_name]
+        
+        game_region.add_locations({
+            location_name : Locations.ids_by_name[location_name] for location_name in Locations.locations
+        }, SoHLocation)
+        self.multiworld.regions.append(game_region)
+
+    def fill_slot_data(self) -> Dict[str, Any]:
+        return {
+            "Settings": "Todo"
+        }        
+
