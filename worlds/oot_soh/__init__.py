@@ -6,11 +6,12 @@ from .LocationList import loc_id_by_name
 from .Items import Items, SoHItem
 from .ItemList import all_items_data, non_filler_data, filler_data
 from .Options import SoHOptions, soh_option_groups
+from .noOptions import noSoHOptions
 from BaseClasses import Tutorial, Item, ItemClassification, Region
 
 class SoHWebWorld(WebWorld):
     theme = "grass"
-    option_groups = soh_option_groups
+    #option_groups = soh_option_groups
     tutorials = [Tutorial(
         "Multiworld Setup Guide",
         "A guide to setting up the Ocarina of Time (SoH) randomizer connected to an Archipelago Multiworld",
@@ -29,8 +30,8 @@ class SoHWorld(World):
     modern amenities such as native Windows/Mac/Linux builds, mod support, customizable UI elements, and more!
     """
     
-    options_dataclass = SoHOptions
-    options: SoHOptions
+    options_dataclass = noSoHOptions
+    options: noSoHOptions
     game: str = "Ocarina of Time (SoH)"
     web: SoHWebWorld = SoHWebWorld()
 
@@ -43,42 +44,47 @@ class SoHWorld(World):
     location_name_to_id = loc_id_by_name
 
     def create_item(self, name: str) -> SoHItem:
-        num, classification = all_items_data[name]
+        item_entry = [item for item in all_items_data if item[0] == name][0]
+        name, num, classification = item_entry
+        if callable(classification):
+            classification = classification(noSoHOptions)
+
         id = Items.all_id_by_name[name]
         return SoHItem(name, classification, id, self.player)
     
     def create_items(self) -> None:
         item_pool: List[SoHItem] = list()
-        num_location = len(Locations.locations)
 
         # add non filler data
         for name, num, classification in non_filler_data:
-            item = self.create_item(name)
+            if callable(num):
+                num = num(True)
+
             if(num < 1):
                 continue    # idk if this can happen
-            item_group = (item for _ in range(num))
+            item_group = (self.create_item(name) for _ in range(num))
             item_pool.extend(item_group)
 
-        while len(num_location) != len(item_pool):
+        while len(LocationList.locations) != len(item_pool):
             # just fill with recovery hearts for now
             # It would be better to randomize these
-            item_pool.append(SoHItem(Items.recovery_heart, ItemClassification.filler, Items.all_id_by_name[name], self.player))
+            name = "Recovery Heart"
+            item_pool.append(SoHItem(name, ItemClassification.filler, Items.all_id_by_name[name], self.player))
 
         self.multiworld.itempool += item_pool
 
     def create_regions(self):
         menu_region = Region("Root", self.player, self.multiworld)
-        menu_region.add_exits("The Game")
         self.multiworld.regions.append(menu_region)
 
         game_region = Region("The Game", self.player, self.multiworld)
-        for location_name in Locations.locations:
-            location_id = Locations.ids_by_name[location_name]
         
         game_region.add_locations({
-            location_name : Locations.ids_by_name[location_name] for location_name in Locations.locations
+            name: id for name, id in LocationList.loc_id_by_name.items()
         }, SoHLocation)
         self.multiworld.regions.append(game_region)
+
+        self.multiworld.get_region("Root", self.player).add_exits(["The Game"])
 
     def fill_slot_data(self) -> Dict[str, Any]:
         return {
