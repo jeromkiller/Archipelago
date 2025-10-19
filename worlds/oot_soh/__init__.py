@@ -342,4 +342,5 @@ class SohWorld(World):
             "ice_trap_filler_replacement": self.options.ice_trap_filler_replacement.value,
             "no_logic": self.options.true_no_logic.value,
             "apworld_version": self.apworld_version,
+            "tricks_in_logic": self.options.tricks_in_logic.value
         }

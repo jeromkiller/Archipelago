@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from Options import Choice, Toggle, DefaultOnToggle, Range, PerGameCommonOptions, StartInventoryPool, Visibility, OptionGroup
+from Options import Choice, Toggle, DefaultOnToggle, Range, PerGameCommonOptions, StartInventoryPool, Visibility, OptionGroup, OptionSet
+from .Enums import Tricks
 
 
 class ClosedForest(Choice):
@@ -836,6 +837,16 @@ class TrueNoLogic(Toggle):
     visibility = Visibility.spoiler
 
 
+class TricksInLogic(OptionSet):
+    display_name = "Tricks in Logic"
+    valid_keys = [str(trick) for trick in Tricks]
+    __doc__ = ("Define what tricks/glitches are considered in logic. "
+               "For more information on what each trick does, check the Ship of Harkinian "
+               "Randomizer -> Seed Settings -> Tricks/Glitches settings.\n"
+               "Trick names: "
+               f"{", ".join(valid_keys)}")
+
+
 @dataclass
 class SohOptions(PerGameCommonOptions):
     closed_forest: ClosedForest
@@ -919,6 +930,7 @@ class SohOptions(PerGameCommonOptions):
     ice_trap_count: IceTrapCount
     ice_trap_filler_replacement: IceTrapFillerReplacement
     true_no_logic: TrueNoLogic
+    tricks_in_logic: TricksInLogic
 
 
 soh_option_groups = [
@@ -930,6 +942,7 @@ soh_option_groups = [
         SleepingWaterfall,
         JabuJabu,
         LockOverworldDoors,
+        TricksInLogic
     ]),
     OptionGroup("World Settings", [
         StartingAge,
