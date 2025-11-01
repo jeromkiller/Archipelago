@@ -794,6 +794,9 @@ def can_cut_shrubs(bundle: tuple[CollectionState, Regions, "SohWorld"]) -> bool:
             has_explosives(bundle) or
             can_use_any([Items.BOOMERANG, Items.GORONS_BRACELET, Items.MEGATON_HAMMER], bundle))
 
+def can_clear_stalagmite(bundle: tuple[CollectionState, Regions, "SohWorld"]) -> bool:
+    """Check if link can clear stalagmites."""
+    return can_jump_slash(bundle) or has_explosives(bundle)
 
 def hookshot_or_boomerang(bundle: tuple[CollectionState, Regions, "SohWorld"]) -> bool:
     """Check if Link has hookshot or boomerang."""
