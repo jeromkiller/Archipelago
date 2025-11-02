@@ -106,6 +106,9 @@ class SohWorld(World):
         if self.options.shuffle_scrubs_minimum_price.value > self.options.shuffle_scrubs_maximum_price.value:
             self.options.shuffle_scrubs_maximum_price.value = self.options.shuffle_scrubs_minimum_price.value
 
+        if self.options.shuffle_merchants_minimum_price.value > self.options.shuffle_merchants_maximum_price.value:
+            self.options.shuffle_merchants_maximum_price.value = self.options.shuffle_merchants_minimum_price.value 
+
     def create_regions(self) -> None:
         create_regions_and_locations(self)
         place_locked_items(self)
