@@ -484,6 +484,27 @@ class ShuffleMerchants(Choice):
     default = 0
 
 
+class ShuffleMerchantsMinimumPrice(Range):
+    """
+    If Shuffle Merchants is on, set their minimum price. Final price will be rounded down to multiples of 5.
+    """
+    display_name = "Shuffle Merchants Minimum Price"
+    range_start = 0
+    range_end = 999
+    default = 10
+
+
+class ShuffleMerchantsMaximumPrice(Range):
+    """
+    If Shuffle Merchants is on, set their maximum price. Final price will be rounded down to multiples of 5.
+    If this is set below the minimum, this option will be set to whatever the minimum is set to.
+    """
+    display_name = "Shuffle Merchants Maximum Price"
+    range_start = 0
+    range_end = 999
+    default = 90
+
+
 class ShuffleFrogSongRupees(Toggle):
     """
     Shuffle the purple rupee rewards from the frogs in Zora's River. If this is turned off, only the Song of Storms and Frog Minigame rewards are shuffled.
@@ -882,6 +903,8 @@ class SohOptions(PerGameCommonOptions):
     shuffle_crates: ShuffleCrates
     shuffle_trees: ShuffleTrees
     shuffle_merchants: ShuffleMerchants
+    shuffle_merchants_minimum_price: ShuffleMerchantsMinimumPrice
+    shuffle_merchants_maximum_price: ShuffleMerchantsMaximumPrice
     shuffle_frog_song_rupees: ShuffleFrogSongRupees
     shuffle_adult_trade_items: ShuffleAdultTradeItems
     shuffle_boss_souls: ShuffleBossSouls
@@ -991,7 +1014,8 @@ soh_option_groups = [
         ShuffleCrates,
         ShuffleTrees,
         ShuffleMerchants,
-        # Merchant prices
+        ShuffleMerchantsMinimumPrice,
+        ShuffleMerchantsMaximumPrice,
         ShuffleFrogSongRupees,
         ShuffleAdultTradeItems,
         Shuffle100GSReward,
