@@ -288,8 +288,7 @@ def set_price_rules(world: "SohWorld") -> None:
         for slot in merchants_items_location_table.keys():
             if world.options.shuffle_merchants == "bean_merchant_only" and slot != Locations.ZR_MAGIC_BEAN_SALESMAN:
                 continue
-            # All But Bean Merchant
-            if world.options.shuffle_merchants.value == 2 and slot == Locations.ZR_MAGIC_BEAN_SALESMAN:
+            if world.options.shuffle_merchants == "option_all_but_beans" and slot == Locations.ZR_MAGIC_BEAN_SALESMAN:
                 continue
 
             price = world.merchant_prices[slot]
