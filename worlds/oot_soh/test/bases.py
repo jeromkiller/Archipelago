@@ -12,6 +12,4 @@ class SohTestBase(WorldTestBase):
 
         Also automatically award the item for convenience sake.
         """
-        self.world.push_precollected(self.world.create_item(Items.GLITCHED))
-        self.multiworld.itempool.append(Item(Items.GLITCHED, ItemClassification.progression, None, 1))
-        self.collect_by_name(Items.GLITCHED)
+        self.collect(self.world.create_item(Items.GLITCHED))
