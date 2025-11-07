@@ -242,7 +242,7 @@ def generate_merchant_prices(world: "SohWorld") -> None:
         for slot in merchants_items_location_table.keys():
             if world.options.shuffle_merchants == "bean_merchant_only" and slot != Locations.ZR_MAGIC_BEAN_SALESMAN:
                 continue
-            if world.options.shuffle_merchants == "option_all_but_beans" and slot == Locations.ZR_MAGIC_BEAN_SALESMAN:
+            if world.options.shuffle_merchants == "all_but_beans" and slot == Locations.ZR_MAGIC_BEAN_SALESMAN:
                 continue
 
             world.merchant_prices[slot] = create_random_price(min_merchant_price, max_merchant_price, world)
@@ -286,7 +286,7 @@ def set_price_rules(world: "SohWorld") -> None:
         for slot in merchants_items_location_table.keys():
             if world.options.shuffle_merchants == "bean_merchant_only" and slot != Locations.ZR_MAGIC_BEAN_SALESMAN:
                 continue
-            if world.options.shuffle_merchants == "option_all_but_beans" and slot == Locations.ZR_MAGIC_BEAN_SALESMAN:
+            if world.options.shuffle_merchants == "all_but_beans" and slot == Locations.ZR_MAGIC_BEAN_SALESMAN:
                 continue
 
             price = world.merchant_prices[slot]
