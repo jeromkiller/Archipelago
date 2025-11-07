@@ -18,6 +18,7 @@ from .Presets import oot_soh_options_presets
 from .UniversalTracker import setup_options_from_slot_data
 from settings import Group, Bool
 from Options import OptionError
+from .LogicHelpers import wallet_capacities
 
 import logging
 logger = logging.getLogger("SOH_OOT")
@@ -99,6 +100,12 @@ class SohWorld(World):
         # If door of time is set to closed and dungeon rewards aren't shuffled, force child spawn
         if self.options.door_of_time.value == 0 and self.options.shuffle_dungeon_rewards.value == 0:
             self.options.starting_age.value = 0
+
+        # Check if Tycoon Wallet is shuffled and if price settings are above what Giants Wallet can hold. Max/Min Prices need to be adjusted to fit in Giants Wallet.
+        if not self.options.shuffle_tycoon_wallet.value:
+            for option in (self.options.shuffle_shops_minimum_price, self.options.shuffle_shops_maximum_price, self.options.shuffle_scrubs_minimum_price, self.options.shuffle_scrubs_maximum_price, self.options.shuffle_merchants_minimum_price, self.options.shuffle_merchants_maximum_price):
+                if option.value > wallet_capacities[Items.GIANT_WALLET]:
+                    option.value = wallet_capacities[Items.GIANT_WALLET]
 
         # If maximum price is below minimum, set max to minimum.
         if self.options.shuffle_shops_minimum_price.value > self.options.shuffle_shops_maximum_price.value:
