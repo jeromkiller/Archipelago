@@ -12,7 +12,7 @@ from .Regions import create_regions_and_locations, place_locked_items, dungeon_r
 from .Enums import *
 from .ItemPool import create_item_pool, create_filler_item_pool, create_triforce_pieces, get_filler_item
 from . import RegionAgeAccess
-from .ShopItems import fill_shop_items, generate_scrub_prices, set_price_rules, all_shop_locations
+from .ShopItems import fill_shop_items, generate_scrub_prices, generate_merchant_prices, set_price_rules, all_shop_locations
 from Fill import fill_restrictive
 from .Presets import oot_soh_options_presets
 from .UniversalTracker import setup_options_from_slot_data
@@ -66,6 +66,7 @@ class SohWorld(World):
     location_name_groups = location_name_groups
 
     # Universal Tracker stuff, does not do anything in normal gen
+    glitches_item_name = Items.GLITCHED
     using_ut: bool  # so we can check if we're using UT only once
     passthrough: dict[str, Any]  # slot data that got passed through
     ut_can_gen_without_yaml = True  # class var that tells it to ignore the player yaml
@@ -77,6 +78,7 @@ class SohWorld(World):
         self.shop_prices = dict[str, int]()
         self.shop_vanilla_items = dict[str, str]()
         self.scrub_prices = dict[str, int]()
+        self.merchant_prices = dict[str, int]()
         self.triforce_pieces_required: int = 0
 
         apworld_manifest = orjson.loads(pkgutil.get_data(
@@ -105,10 +107,14 @@ class SohWorld(World):
         if self.options.shuffle_scrubs_minimum_price.value > self.options.shuffle_scrubs_maximum_price.value:
             self.options.shuffle_scrubs_maximum_price.value = self.options.shuffle_scrubs_minimum_price.value
 
+        if self.options.shuffle_merchants_minimum_price.value > self.options.shuffle_merchants_maximum_price.value:
+            self.options.shuffle_merchants_maximum_price.value = self.options.shuffle_merchants_minimum_price.value 
+
     def create_regions(self) -> None:
         create_regions_and_locations(self)
         place_locked_items(self)
         generate_scrub_prices(self)
+        generate_merchant_prices(self)
         for location in self.get_locations():
             location.name = str(location.name)
         for region in self.get_regions():
@@ -299,6 +305,7 @@ class SohWorld(World):
             "shuffle_fish": self.options.shuffle_fish.value,
             "shuffle_scrubs": self.options.shuffle_scrubs.value,
             "scrub_prices": self.scrub_prices,
+            "merchant_prices": self.merchant_prices,
             "shuffle_beehives": self.options.shuffle_beehives.value,
             "shuffle_cows": self.options.shuffle_cows.value,
             "shuffle_pots": self.options.shuffle_pots.value,
