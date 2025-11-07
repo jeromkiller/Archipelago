@@ -1,5 +1,4 @@
 from test.bases import WorldTestBase
-from BaseClasses import Item, ItemClassification
 from ..Items import Items
 
 class SohTestBase(WorldTestBase):
