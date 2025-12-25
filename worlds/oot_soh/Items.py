@@ -30,7 +30,7 @@ class SohItemData(NamedTuple):
 item_data_table: dict[Items, SohItemData] = {
     # Items commented out that can never appear in the item pool and are only used on Ship internally
 
-    Items.KOKIRI_SWORD: SohItemData(1, IC.progression | IC.useful, 1, child_only=True, item_groups=["Swords", "Sword"]),
+    Items.KOKIRI_SWORD: SohItemData(1, IC.progression | IC.useful, 0, child_only=True, item_groups=["Swords", "Sword"]),
     Items.MASTER_SWORD: SohItemData(2, IC.progression | IC.useful, 0, adult_only=True, item_groups=["Swords", "Sword"]),
     Items.GIANTS_KNIFE: SohItemData(3, IC.progression, 0, adult_only=True, item_groups=["Swords", "Sword"]),
     Items.BIGGORONS_SWORD: SohItemData(4, IC.progression | IC.useful, 1, adult_only=True, item_groups=["Swords", "Sword"]),
