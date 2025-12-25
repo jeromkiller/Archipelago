@@ -281,6 +281,11 @@ def place_locked_items(world: "SohWorld") -> None:
         world.get_location(Locations.HC_ZELDAS_LETTER).place_locked_item(
             world.create_item(Items.ZELDAS_LETTER))
 
+    # Place Kokiri Sword on vanilla location if not shuffled
+    if not world.options.shuffle_kokiri_sword:
+        world.get_location(Locations.KF_KOKIRI_SWORD_CHEST).place_locked_item(
+            world.create_item(Items.KOKIRI_SWORD))
+
     # Place Master Sword on vanilla location if not shuffled
     if not world.options.shuffle_master_sword:
         world.get_location(Locations.MARKET_TOT_MASTER_SWORD).place_locked_item(

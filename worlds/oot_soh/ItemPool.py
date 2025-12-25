@@ -58,6 +58,10 @@ def create_item_pool(world: "SohWorld") -> None:
     if world.options.shuffle_skull_tokens == "dungeon" or world.options.shuffle_skull_tokens == "all":
         items_to_create[Items.GOLD_SKULLTULA_TOKEN] += int(TokenCounts.DUNGEON)
 
+    # Kokiri Sword
+    if world.options.shuffle_kokiri_sword:
+        items_to_create[Items.KOKIRI_SWORD] = 1
+
     # Master Sword
     if world.options.shuffle_master_sword:
         items_to_create[Items.MASTER_SWORD] = 1

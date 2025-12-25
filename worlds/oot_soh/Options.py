@@ -246,6 +246,12 @@ class SkullsSunSong(Toggle):
     """
     display_name = "Night Skulltulas Expect Sun's Song"
 
+class ShuffleKokiriSword(Toggle):
+    """
+    Shuffles the Kokiri Sword into the item pool.
+    This will require the use of sticks until hte Kokiri Sword is found.
+    """
+    display_name = "Shuffle Kokiri Sword"
 
 class ShuffleMasterSword(Toggle):
     """
@@ -927,6 +933,7 @@ class SohOptions(PerGameCommonOptions):
     triforce_hunt_pieces_required_percentage: TriforceHuntPiecesRequiredPercentage
     shuffle_skull_tokens: ShuffleTokens
     skulls_sun_song: SkullsSunSong
+    shuffle_kokiri_sword: ShuffleKokiriSword
     shuffle_master_sword: ShuffleMasterSword
     shuffle_childs_wallet: ShuffleChildsWallet
     shuffle_ocarina_buttons: ShuffleOcarinaButtons
@@ -1037,7 +1044,7 @@ soh_option_groups = [
         # Shuffle Songs -- idk if this or the other ones here will be an actual option here, delete if not
         ShuffleTokens,
         SkullsSunSong,
-        # Shuffle Kokiri Sword
+        ShuffleKokiriSword,
         ShuffleMasterSword,
         ShuffleChildsWallet,
         ShuffleTycoonWallet,
