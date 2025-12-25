@@ -34,6 +34,7 @@ def setup_options_from_slot_data(world: "SohWorld") -> None:
             world.options.shuffle_kokiri_sword.value = world.passthrough["shuffle_kokiri_sword"]
             world.options.shuffle_master_sword.value = world.passthrough["shuffle_master_sword"]
             world.options.shuffle_childs_wallet.value = world.passthrough["shuffle_childs_wallet"]
+            world.options.shuffle_tycoon_wallet.value = world.passthrough["shuffle_tycoon_wallet"]
             world.options.shuffle_ocarinas.value = world.passthrough["shuffle_ocarinas"]
             world.options.shuffle_ocarina_buttons.value = world.passthrough["shuffle_ocarina_buttons"]
             world.options.shuffle_swim.value = world.passthrough["shuffle_swim"]
