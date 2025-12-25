@@ -290,6 +290,13 @@ def place_locked_items(world: "SohWorld") -> None:
     if not world.options.shuffle_master_sword:
         world.get_location(Locations.MARKET_TOT_MASTER_SWORD).place_locked_item(
             world.create_item(Items.MASTER_SWORD))
+        
+    # Place the Ocarinas on their vanilla locations if not shuffled
+    if not world.options.shuffle_ocarinas:
+        world.get_location(Locations.LW_GIFT_FROM_SARIA).place_locked_item(
+            world.create_item(Items.PROGRESSIVE_OCARINA))
+        world.get_location(Locations.HF_OCARINA_OF_TIME_ITEM).place_locked_item(
+            world.create_item(Items.PROGRESSIVE_OCARINA))
 
     # Preplace dungeon rewards in vanilla locations when not shuffled
     if world.options.shuffle_dungeon_rewards == "off":

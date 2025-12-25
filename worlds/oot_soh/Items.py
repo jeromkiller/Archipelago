@@ -81,7 +81,7 @@ item_data_table: dict[Items, SohItemData] = {
     Items.PROGRESSIVE_MAGIC_METER: SohItemData(49, IC.progression | IC.useful, 2, item_groups=["Magic Meter"]),
     # Items.MAGIC_SINGLE: SohItemData( 50, IC.filler, 0 ),
     # Items.MAGIC_DOUBLE: SohItemData( 51, IC.filler, 0 ),
-    Items.PROGRESSIVE_OCARINA: SohItemData(52, IC.progression | IC.useful, 2, item_groups=["Ocarinas", "Ocarina"]),
+    Items.PROGRESSIVE_OCARINA: SohItemData(52, IC.progression | IC.useful, 0, item_groups=["Ocarinas", "Ocarina"]),
     # Items.PROGRESSIVE_GORON_SWORD: SohItemData(53, IC.progression, 0),
     Items.EMPTY_BOTTLE: SohItemData(54, IC.progression | IC.useful, 0, item_groups=["Bottles", "Bottle"]),
     Items.BOTTLE_WITH_MILK: SohItemData(55, IC.progression | IC.useful, 0, item_groups=["Bottles", "Bottle"]),

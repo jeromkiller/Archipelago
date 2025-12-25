@@ -74,6 +74,10 @@ def create_item_pool(world: "SohWorld") -> None:
     if world.options.shuffle_tycoon_wallet:
         items_to_create[Items.PROGRESSIVE_WALLET] += 1
 
+    # Fiary Ocarina and Ocarina of time
+    if world.options.shuffle_ocarinas:
+        items_to_create[Items.PROGRESSIVE_OCARINA] = 2
+
     # Ocarina Buttons
     if world.options.shuffle_ocarina_buttons:
         items_to_create[Items.OCARINA_A_BUTTON] = 1
@@ -225,8 +229,8 @@ def create_item_pool(world: "SohWorld") -> None:
     if world.options.item_pool.value:
         if world.options.item_pool == "plentiful":
             # This plentiful stuff we might want to add to when we check these above. For simplicity I'll recheck stuff here for now
-            # TODO We don't have an option for shuffle ocarina
-            items_to_create[Items.PROGRESSIVE_OCARINA] += 1
+            if world.options.shuffle_ocarinas:
+                items_to_create[Items.PROGRESSIVE_OCARINA] += 1
 
             if world.options.shuffle_merchants == "all" or world.options.shuffle_merchants == "bean_merchant_only":
                 items_to_create[Items.MAGIC_BEAN_PACK] += 1

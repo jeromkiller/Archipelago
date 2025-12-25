@@ -268,6 +268,12 @@ class ShuffleChildsWallet(Toggle):
     """
     display_name = "Shuffle Child's Wallet"
 
+class ShuffleOcarinas(Toggle):
+    """
+    Enabling this shuffles the Fairy Ocarina and the Ocarina of Time into the item pool.
+    This will require finding an Ocarina before being able to play songs.
+    """
+    display_name = "Shuffle Ocarinas"
 
 class ShuffleOcarinaButtons(Toggle):
     """
@@ -936,6 +942,7 @@ class SohOptions(PerGameCommonOptions):
     shuffle_kokiri_sword: ShuffleKokiriSword
     shuffle_master_sword: ShuffleMasterSword
     shuffle_childs_wallet: ShuffleChildsWallet
+    shuffle_ocarinas: ShuffleOcarinas
     shuffle_ocarina_buttons: ShuffleOcarinaButtons
     shuffle_swim: ShuffleSwim
     shuffle_weird_egg: ShuffleWeirdEgg
@@ -1048,7 +1055,7 @@ soh_option_groups = [
         ShuffleMasterSword,
         ShuffleChildsWallet,
         ShuffleTycoonWallet,
-        # Shuffle Ocarinas
+        ShuffleOcarinas,
         ShuffleOcarinaButtons,
         ShuffleSwim,
         ShuffleWeirdEgg,

@@ -312,6 +312,7 @@ class SohWorld(World):
             "shuffle_kokiri_sword": self.options.shuffle_kokiri_sword.value,
             "shuffle_master_sword": self.options.shuffle_master_sword.value,
             "shuffle_childs_wallet": self.options.shuffle_childs_wallet.value,
+            "shuffle_ocarinas": self.options.shuffle_ocarina_buttons.value,
             "shuffle_ocarina_buttons": self.options.shuffle_ocarina_buttons.value,
             "shuffle_swim": self.options.shuffle_swim.value,
             "shuffle_weird_egg": self.options.shuffle_weird_egg.value,
