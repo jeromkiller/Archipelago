@@ -297,6 +297,11 @@ def place_locked_items(world: "SohWorld") -> None:
             world.create_item(Items.PROGRESSIVE_OCARINA))
         world.get_location(Locations.HF_OCARINA_OF_TIME_ITEM).place_locked_item(
             world.create_item(Items.PROGRESSIVE_OCARINA))
+        
+    # Place the Gerudo Membership Card on vanilla location if not shuffled
+    if not world.options.shuffle_gerudo_membership_card:
+        world.get_location(Locations.GF_GERUDO_MEMBERSHIP_CARD).place_locked_item(
+            world.create_item(Items.GERUDO_MEMBERSHIP_CARD))
 
     # Preplace dungeon rewards in vanilla locations when not shuffled
     if world.options.shuffle_dungeon_rewards == "off":

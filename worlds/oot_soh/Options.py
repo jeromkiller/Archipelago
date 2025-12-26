@@ -305,6 +305,12 @@ class ShuffleWeirdEgg(Toggle):
     """
     display_name = "Shuffle Weird Egg"
 
+class ShuffleGerudoMembershipCard(Toggle):
+    """
+    Shuffles the Gerudo Membership Card into the item pool.
+    The gerudo Card is required to enter the Gerudo Training Ground, opening the gate to Haunted Wasteland and the Horseback Archery minigame.
+    """
+    display_name = "Shuffle Gerudo Membership Card"
 
 class ShuffleFishingPole(Toggle):
     """
@@ -946,6 +952,7 @@ class SohOptions(PerGameCommonOptions):
     shuffle_ocarina_buttons: ShuffleOcarinaButtons
     shuffle_swim: ShuffleSwim
     shuffle_weird_egg: ShuffleWeirdEgg
+    shuffle_gerudo_membership_card: ShuffleGerudoMembershipCard
     shuffle_fishing_pole: ShuffleFishingPole
     shuffle_deku_stick_bag: ShuffleDekuStickBag
     shuffle_deku_nut_bag: ShuffleDekuNutBag
@@ -1059,7 +1066,7 @@ soh_option_groups = [
         ShuffleOcarinaButtons,
         ShuffleSwim,
         ShuffleWeirdEgg,
-        # Shuffle Gerudu Membership Card
+        ShuffleGerudoMembershipCard,
         ShuffleFishingPole,
         ShuffleDekuStickBag,
         ShuffleDekuNutBag,

@@ -94,6 +94,10 @@ def create_item_pool(world: "SohWorld") -> None:
     if not world.options.skip_child_zelda and world.options.shuffle_weird_egg:
         items_to_create[Items.WEIRD_EGG] = 1
 
+    # Gerudo Membership Card
+    if world.options.shuffle_gerudo_membership_card:
+        items_to_create[Items.GERUDO_MEMBERSHIP_CARD] = 1
+
     # Fishing Pole
     if world.options.shuffle_fishing_pole:
         items_to_create[Items.FISHING_POLE] = 1

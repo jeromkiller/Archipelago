@@ -51,7 +51,7 @@ item_data_table: dict[Items, SohItemData] = {
     Items.FIRE_ARROW: SohItemData(19, IC.progression, 1, adult_only=True, item_type=ItemType.magic, item_groups=["Magic Arrows"]),
     Items.ICE_ARROW: SohItemData(20, IC.filler, 1, adult_only=True, item_type=ItemType.magic, item_groups=["Magic Arrows"]),
     Items.LIGHT_ARROW: SohItemData(21, IC.progression, 1, adult_only=True, item_type=ItemType.magic, item_groups=["Magic Arrows"]),
-    Items.GERUDO_MEMBERSHIP_CARD: SohItemData(22, IC.progression, 1),
+    Items.GERUDO_MEMBERSHIP_CARD: SohItemData(22, IC.progression, 0),
     Items.MAGIC_BEAN: SohItemData(23, IC.progression, 0, child_only=True, item_groups=["Beans", "Bean"]),
     Items.MAGIC_BEAN_PACK: SohItemData(24, IC.progression, 0, child_only=True, item_groups=["Beans", "Bean"]),
     Items.DOUBLE_DEFENSE: SohItemData(25, IC.useful, 1),

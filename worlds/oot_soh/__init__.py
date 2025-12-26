@@ -316,6 +316,7 @@ class SohWorld(World):
             "shuffle_ocarinas": self.options.shuffle_ocarina_buttons.value,
             "shuffle_ocarina_buttons": self.options.shuffle_ocarina_buttons.value,
             "shuffle_swim": self.options.shuffle_swim.value,
+            "shuffle_gerudo_membership_card": self.options.shuffle_gerudo_membership_card.value,
             "shuffle_weird_egg": self.options.shuffle_weird_egg.value,
             "shuffle_fishing_pole": self.options.shuffle_fishing_pole.value,
             "shuffle_deku_stick_bag": self.options.shuffle_deku_stick_bag.value,
