@@ -99,8 +99,8 @@ class SohWorld(World):
                               "setting has not been enabled. Either have them disable that option, or enable it in "
                               "your host.yaml settings.")
 
-        # If door of time is set to closed and dungeon rewards aren't shuffled, force child spawn
-        if self.options.door_of_time.value == 0 and self.options.shuffle_dungeon_rewards.value == 0:
+        # If door of time is set to closed and dungeon rewards aren't shuffled or ocarinas aren't shuffled, force child spawn
+        if self.options.door_of_time.value == 0 and (self.options.shuffle_dungeon_rewards.value == 0 or self.options.shuffle_ocarinas == 0):
             self.options.starting_age.value = 0
 
         # Check if Tycoon Wallet is shuffled and if price settings are above what Giants Wallet can hold. Max/Min Prices need to be adjusted to fit in Giants Wallet.
