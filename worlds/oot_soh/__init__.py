@@ -20,6 +20,7 @@ from .UniversalTracker import setup_options_from_slot_data
 from settings import Group, Bool
 from Options import OptionError, Toggle
 from .LogicHelpers import wallet_capacities, key_to_ring
+from collections import namedtuple
 
 import logging
 logger = logging.getLogger("SOH_OOT")
@@ -301,15 +302,17 @@ class SohWorld(World):
         elif self.options.boss_key_shuffle == "overworld":
             key_overworld += [Items.FOREST_TEMPLE_BOSS_KEY, Items.FIRE_TEMPLE_BOSS_KEY, Items.WATER_TEMPLE_BOSS_KEY, Items.SPIRIT_TEMPLE_BOSS_KEY, Items.SHADOW_TEMPLE_BOSS_KEY]
 
+        option_mapping = namedtuple('Key_Mapping', ['Dungeon', 'Option', 'Quantity'])
+
         small_key_option_mapping = {
-            Items.FOREST_TEMPLE_SMALL_KEY: (Dungeons.FOREST_TEMPLE, self.options.forest_temple_key_ring, item_data_table[Items.FOREST_TEMPLE_SMALL_KEY].quantity_in_item_pool),
-            Items.FIRE_TEMPLE_SMALL_KEY: (Dungeons.FIRE_TEMPLE, self.options.fire_temple_key_ring, item_data_table[Items.FIRE_TEMPLE_SMALL_KEY].quantity_in_item_pool),
-            Items.WATER_TEMPLE_SMALL_KEY: (Dungeons.WATER_TEMPLE, self.options.water_temple_key_ring, item_data_table[Items.WATER_TEMPLE_SMALL_KEY].quantity_in_item_pool),
-            Items.SPIRIT_TEMPLE_SMALL_KEY: (Dungeons.SPIRIT_TEMPLE, self.options.spirit_temple_key_ring, item_data_table[Items.SPIRIT_TEMPLE_SMALL_KEY].quantity_in_item_pool),
-            Items.SHADOW_TEMPLE_SMALL_KEY: (Dungeons.SHADOW_TEMPLE, self.options.shadow_temple_key_ring, item_data_table[Items.SHADOW_TEMPLE_SMALL_KEY].quantity_in_item_pool),
-            Items.BOTTOM_OF_THE_WELL_SMALL_KEY: (Dungeons.BOTTOM_OF_THE_WELL, self.options.bottom_of_the_well_key_ring, item_data_table[Items.BOTTOM_OF_THE_WELL_SMALL_KEY].quantity_in_item_pool),
-            Items.GANONS_CASTLE_SMALL_KEY: (Dungeons.GANONS_CASTLE, self.options.ganons_castle_key_ring, item_data_table[Items.GANONS_CASTLE_SMALL_KEY].quantity_in_item_pool),
-            Items.TRAINING_GROUND_SMALL_KEY: (Dungeons.GERUDO_TRAINING_GROUNDS, self.options.gerudo_training_ground_key_ring, item_data_table[Items.TRAINING_GROUND_SMALL_KEY].quantity_in_item_pool)
+            Items.FOREST_TEMPLE_SMALL_KEY: option_mapping(Dungeons.FOREST_TEMPLE, self.options.forest_temple_key_ring, item_data_table[Items.FOREST_TEMPLE_SMALL_KEY].quantity_in_item_pool),
+            Items.FIRE_TEMPLE_SMALL_KEY: option_mapping(Dungeons.FIRE_TEMPLE, self.options.fire_temple_key_ring, item_data_table[Items.FIRE_TEMPLE_SMALL_KEY].quantity_in_item_pool),
+            Items.WATER_TEMPLE_SMALL_KEY: option_mapping(Dungeons.WATER_TEMPLE, self.options.water_temple_key_ring, item_data_table[Items.WATER_TEMPLE_SMALL_KEY].quantity_in_item_pool),
+            Items.SPIRIT_TEMPLE_SMALL_KEY: option_mapping(Dungeons.SPIRIT_TEMPLE, self.options.spirit_temple_key_ring, item_data_table[Items.SPIRIT_TEMPLE_SMALL_KEY].quantity_in_item_pool),
+            Items.SHADOW_TEMPLE_SMALL_KEY: option_mapping(Dungeons.SHADOW_TEMPLE, self.options.shadow_temple_key_ring, item_data_table[Items.SHADOW_TEMPLE_SMALL_KEY].quantity_in_item_pool),
+            Items.BOTTOM_OF_THE_WELL_SMALL_KEY: option_mapping(Dungeons.BOTTOM_OF_THE_WELL, self.options.bottom_of_the_well_key_ring, item_data_table[Items.BOTTOM_OF_THE_WELL_SMALL_KEY].quantity_in_item_pool),
+            Items.GANONS_CASTLE_SMALL_KEY: option_mapping(Dungeons.GANONS_CASTLE, self.options.ganons_castle_key_ring, item_data_table[Items.GANONS_CASTLE_SMALL_KEY].quantity_in_item_pool),
+            Items.TRAINING_GROUND_SMALL_KEY: option_mapping(Dungeons.GERUDO_TRAINING_GROUNDS, self.options.gerudo_training_ground_key_ring, item_data_table[Items.TRAINING_GROUND_SMALL_KEY].quantity_in_item_pool)
         }
 
         # Small Keys
@@ -321,17 +324,18 @@ class SohWorld(World):
             item: Items
             count: int
             key_ring_option: Toggle
-
+            
+            # Put the small keys or keyrings in the appropriate pool
             for key, data in small_key_option_mapping.items():
-                dungeon = data[0]
-                key_ring_option = data[1]
+                dungeon = data.Dungeon
+                key_ring_option = data.Option
 
                 if key_ring_option:
                     item = key_to_ring[key]
                     count = 1
                 else:
                     item = key
-                    count = data[2]
+                    count = data.Quantity
 
                 if self.options.small_key_shuffle == "own_dungeon":
                     for _ in range(count):
