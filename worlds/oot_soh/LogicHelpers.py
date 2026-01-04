@@ -39,7 +39,7 @@ def add_locations(parent_region: Regions, world: "SohWorld",
         if len(location) > 1:
             locationRule = location[1]  # type: ignore # noqa
         if locationName in world.included_locations:
-            locationAddress = world.included_locations.pop(location[0])
+            locationAddress = world.included_locations.pop(location[0]).loc_id
             world.get_region(parent_region).add_locations(
                 {str(locationName): locationAddress}, SohLocation)
             set_rule(world.get_location(locationName),
@@ -1015,9 +1015,8 @@ def effective_health(bundle: tuple[CollectionState, Regions, "SohWorld"]) -> int
     return 2
 
 
-# TODO implement when shuffling keys within a dungeon is implemented
 def is_fire_loop_locked(bundle: tuple[CollectionState, Regions, "SohWorld"]) -> bool:
-    return True
+    return bundle[2].options.small_key_shuffle == "anywhere" or bundle[2].options.small_key_shuffle == "overworld" or bundle[2].options.small_key_shuffle == "any_dungeon"
 
 
 def can_ground_jump(bundle: tuple[CollectionState, Regions, "SohWorld"], hasBombFlower: bool = False) -> bool:
