@@ -223,37 +223,40 @@ class SohWorld(World):
         return locations
 
     def pre_fill_keys(self) -> None:
-        prefill_state = CollectionState(self.multiworld)
-        for item in self.item_pool:
-            if item.name not in (Items.GANONS_CASTLE_BOSS_KEY, Items.GOLD_SKULLTULA_TOKEN, Items.GREG_THE_GREEN_RUPEE):
-                prefill_state.collect(item, True)
-        for _, shop in all_shop_locations:
-            for _, item in shop.items():
-                prefill_state.collect(self.create_item(item), True)
-        for event in Events:
-            if event not in (Events.GAME_COMPLETED, Events.RESCUED_ALL_CARPENTERS, Events.DEKU_TREE_COMPLETED, Events.DODONGOS_CAVERN_COMPLETED, Events.JABU_JABUS_BELLY_COMPLETED, Events.FOREST_TEMPLE_COMPLETED, Events.FIRE_TEMPLE_COMPLETED, Events.WATER_TEMPLE_COMPLETED, Events.SPIRIT_TEMPLE_COMPLETED, Events.SHADOW_TEMPLE_COMPLETED):
-                prefill_state.collect(Item(str(event), ItemClassification.progression, None, self.player), True)
-        prefill_state.sweep_for_advancements()
+        def get_prefill_state():
+            prefill_state = CollectionState(self.multiworld)
+            for item in self.item_pool:
+                if item.name not in (Items.GANONS_CASTLE_BOSS_KEY, Items.GOLD_SKULLTULA_TOKEN, Items.GREG_THE_GREEN_RUPEE):
+                    prefill_state.collect(item, True)
+            for _, shop in all_shop_locations:
+                for _, item in shop.items():
+                    prefill_state.collect(self.create_item(item), True)
+            #for event in Events:
+            #    if event not in (Events.TIME_TRAVEL, Events.GAME_COMPLETED, Events.RESCUED_ALL_CARPENTERS, Events.DEKU_TREE_COMPLETED, Events.DODONGOS_CAVERN_COMPLETED, Events.JABU_JABUS_BELLY_COMPLETED, Events.FOREST_TEMPLE_COMPLETED, Events.FIRE_TEMPLE_COMPLETED, Events.WATER_TEMPLE_COMPLETED, Events.SPIRIT_TEMPLE_COMPLETED, Events.SHADOW_TEMPLE_COMPLETED):
+            #        prefill_state.collect(Item(str(event), ItemClassification.progression, None, self.player), True)
+            prefill_state.sweep_for_advancements()
+            return prefill_state
+        
 
         key_own_dungeon: dict[Dungeons, list[Items]] = {
             Dungeons.FOREST_TEMPLE: [],
             Dungeons.FIRE_TEMPLE: [],
             Dungeons.WATER_TEMPLE: [],
             Dungeons.SPIRIT_TEMPLE: [],
-            Dungeons.SHADOW_TEMPLE: [],
             Dungeons.BOTTOM_OF_THE_WELL: [],
             Dungeons.GERUDO_TRAINING_GROUNDS: [],
-            Dungeons.GANONS_CASTLE: []
+            Dungeons.GANONS_CASTLE: [],
+            Dungeons.SHADOW_TEMPLE: []  # shuffle shadow temple last
         }
         locations_own_dungeon: dict[Dungeons, list[Locations]] = {
             Dungeons.FOREST_TEMPLE: [],
             Dungeons.FIRE_TEMPLE: [],
             Dungeons.WATER_TEMPLE: [],
-            Dungeons.SPIRIT_TEMPLE: [],
             Dungeons.SHADOW_TEMPLE: [],
             Dungeons.BOTTOM_OF_THE_WELL: [],
             Dungeons.GERUDO_TRAINING_GROUNDS: [],
-            Dungeons.GANONS_CASTLE: []
+            Dungeons.GANONS_CASTLE: [],
+            Dungeons.SPIRIT_TEMPLE: []  # shuffle shadow temple last
         }
 
         key_any_dungeon: list[Items] = []
@@ -269,7 +272,7 @@ class SohWorld(World):
         if self.options.shuffle_dungeon_rewards != "anywhere":
             reserved_locations += [location.value for location in dungeon_reward_item_mapping.keys()]
 
-        # Reserve Shop Locations
+        # Reserve Shop Locations        # Todo, is this needed? we don't put items in the shop here
         for data in all_shop_locations:
             for location in data[1].keys():
                 reserved_locations.append(location)
@@ -366,25 +369,41 @@ class SohWorld(World):
         # Resolve own_dungeon, any_dungeon and overworld options
         if own_dungeon:
             for dungeon, keys in key_own_dungeon.items():
-                if dungeon == Dungeons.GANONS_CASTLE:
-                    bridge = Item(str(LocalEvents.HC_OGC_RAINBOW_BRIDGE_BUILT), ItemClassification.progression, None, self.player)
-                    prefill_state.collect(bridge, True)
-                if dungeon == Dungeons.GERUDO_TRAINING_GROUNDS:
-                    carpenters = Item(str(Events.RESCUED_ALL_CARPENTERS), ItemClassification.progression, None, self.player)
-                    prefill_state.collect(carpenters, True)
+                prefill_state = get_prefill_state()
+                # make sure we can access each dungeon
+                bridge = Item(str(LocalEvents.HC_OGC_RAINBOW_BRIDGE_BUILT), ItemClassification.progression, None, self.player)
+                prefill_state.collect(bridge, True)
+                carpenters = Item(str(Events.RESCUED_ALL_CARPENTERS), ItemClassification.progression, None, self.player)
+                prefill_state.collect(carpenters, True)
+                prefill_state.collect(Item(str(Events.TIME_TRAVEL), ItemClassification.progression, None, self.player))
+                prefill_state.sweep_for_advancements()
 
-                fill_restrictive(self.multiworld, prefill_state, self.get_empty_locations_from_list_shuffled(locations_own_dungeon[dungeon]), [self.create_item(str(key)) for key in keys], single_player_placement=True, lock=True)
+                # use full dungeon accessability as the completion goal for this dungeon
+                original_condition = self.multiworld.completion_condition[self.player]
+                dungeon_locations = self.get_empty_locations_from_list_shuffled(locations_own_dungeon[dungeon])
+                dungeon_location_goal = [self.get_location(loc) for loc in locations_own_dungeon[dungeon]]  # copy of the locations that doesn't get modified for completion goal
 
-                if dungeon == Dungeons.GANONS_CASTLE:
-                    prefill_state.remove(bridge)
-                if dungeon == Dungeons.GERUDO_TRAINING_GROUNDS:
-                    prefill_state.remove(carpenters)
+                self.multiworld.completion_condition[self.player] = lambda state: all([state.can_reach(loc) for loc in dungeon_location_goal])
+                fill_restrictive(self.multiworld, prefill_state, dungeon_locations, [self.create_item(str(key)) for key in keys], single_player_placement=True, lock=True)
+
+                self.multiworld.completion_condition[self.player] = original_condition
+
+        original_condition = self.multiworld.completion_condition[self.player]
+        all_dungeon_location_goal = [self.get_location(loc) for loc in locations_any_dungeon]
+        self.multiworld.completion_condition[self.player] = lambda state: all([state.can_reach(loc) for loc in all_dungeon_location_goal])
 
         if key_any_dungeon:
+            prefill_state = get_prefill_state()
+            for key in key_overworld:
+                prefill_state.collect(self.create_item(key), True)
+            prefill_state.sweep_for_advancements()
             fill_restrictive(self.multiworld, prefill_state, self.get_empty_locations_from_list_shuffled(locations_any_dungeon), [self.create_item(str(key)) for key in key_any_dungeon], single_player_placement=True, lock=True)
 
         if key_overworld:
+            prefill_state = get_prefill_state()
             fill_restrictive(self.multiworld, prefill_state, self.get_empty_locations_from_list_shuffled(locations_overworld), [self.create_item(str(key)) for key in key_overworld], single_player_placement=True, lock=True)
+        self.multiworld.completion_condition[self.player] = original_condition
+
 
     def pre_fill_dungeon(self) -> None:
         # Prefill Dungeon Rewards. Need to collect the item pool and vanilla shop items before doing so.
@@ -395,6 +414,8 @@ class SohWorld(World):
         for region, shop in all_shop_locations:
             for slot, item in shop.items():
                 prefill_state.collect(self.create_item(item), True)
+        for key in [key for key, data in item_data_table.items() if "Small Keys" in data.item_groups or "Boss Keys" in data.item_groups]:
+            prefill_state.collect(self.create_item(key), True)
         prefill_state.sweep_for_advancements()
 
         dungeon_reward_locations = [self.get_location(location.value)
@@ -403,9 +424,15 @@ class SohWorld(World):
             item.value) for item in dungeon_reward_item_mapping.values()]
         self.random.shuffle(dungeon_reward_items)
 
+        completion_items = [c.name for c in dungeon_reward_items]
+        original_completion_rule = self.multiworld.completion_condition[self.player]
+        self.multiworld.completion_condition[self.player] = lambda state: state.has_all(completion_items, self.player)
+
         # Place dungeon rewards
         fill_restrictive(self.multiworld, prefill_state, dungeon_reward_locations,
                          dungeon_reward_items, single_player_placement=True, lock=True)
+        
+        self.multiworld.completion_condition[self.player] = original_completion_rule
 
     def create_items(self) -> None:
         # these are for making the progressive items collect/remove work properly
@@ -435,11 +462,11 @@ class SohWorld(World):
 
         self.set_completion_rule()
 
-        self.pre_fill_keys()
-
         # these place items, so they should be done during create_items
         if self.options.shuffle_dungeon_rewards == "dungeons":
             self.pre_fill_dungeon()
+
+        self.pre_fill_keys()
 
         fill_shop_items(self)
 

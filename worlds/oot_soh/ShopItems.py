@@ -199,9 +199,16 @@ def fill_shop_items(world: "SohWorld") -> None:
         prefill_state.collect(item, True)
     prefill_state.sweep_for_advancements()
 
+    original_condition = world.multiworld.completion_condition[world.player]
+    goal_locations = [loc for loc in vanilla_shop_locations]
+    world.multiworld.completion_condition[world.player] = lambda state: all([state.can_reach(loc) for loc in goal_locations])
+
     # place the vanilla shop items
     fill_restrictive(world.multiworld, prefill_state, vanilla_shop_locations,
                      vanilla_items, single_player_placement=True, lock=True)
+    
+    world.multiworld.completion_condition[world.player] = original_condition
+    
     for slot in vanilla_shop_slots:
         location = world.get_location(slot)
         location.address = None
