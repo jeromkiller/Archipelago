@@ -226,14 +226,10 @@ class SohWorld(World):
         def get_prefill_state():
             prefill_state = CollectionState(self.multiworld)
             for item in self.item_pool:
-                if item.name not in (Items.GANONS_CASTLE_BOSS_KEY, Items.GOLD_SKULLTULA_TOKEN, Items.GREG_THE_GREEN_RUPEE):
-                    prefill_state.collect(item, True)
-            for _, shop in all_shop_locations:
-                for _, item in shop.items():
-                    prefill_state.collect(self.create_item(item), True)
-            #for event in Events:
-            #    if event not in (Events.TIME_TRAVEL, Events.GAME_COMPLETED, Events.RESCUED_ALL_CARPENTERS, Events.DEKU_TREE_COMPLETED, Events.DODONGOS_CAVERN_COMPLETED, Events.JABU_JABUS_BELLY_COMPLETED, Events.FOREST_TEMPLE_COMPLETED, Events.FIRE_TEMPLE_COMPLETED, Events.WATER_TEMPLE_COMPLETED, Events.SPIRIT_TEMPLE_COMPLETED, Events.SHADOW_TEMPLE_COMPLETED):
-            #        prefill_state.collect(Item(str(event), ItemClassification.progression, None, self.player), True)
+                #if item.name not in (Items.GANONS_CASTLE_BOSS_KEY, Items.GOLD_SKULLTULA_TOKEN, Items.GREG_THE_GREEN_RUPEE):
+                prefill_state.collect(item, True)
+            for item in ShopItems.get_vanilla_shop_pool(self):
+                prefill_state.collect(self.create_item(item), True)
             prefill_state.sweep_for_advancements()
             return prefill_state
         
@@ -272,7 +268,7 @@ class SohWorld(World):
         if self.options.shuffle_dungeon_rewards != "anywhere":
             reserved_locations += [location.value for location in dungeon_reward_item_mapping.keys()]
 
-        # Reserve Shop Locations        # Todo, is this needed? we don't put items in the shop here
+        # Reserve Shop Locations       # todo, only reserve vanilla shop slots
         for data in all_shop_locations:
             for location in data[1].keys():
                 reserved_locations.append(location)
@@ -371,11 +367,32 @@ class SohWorld(World):
             for dungeon, keys in key_own_dungeon.items():
                 prefill_state = get_prefill_state()
                 # make sure we can access each dungeon
-                bridge = Item(str(LocalEvents.HC_OGC_RAINBOW_BRIDGE_BUILT), ItemClassification.progression, None, self.player)
-                prefill_state.collect(bridge, True)
-                carpenters = Item(str(Events.RESCUED_ALL_CARPENTERS), ItemClassification.progression, None, self.player)
-                prefill_state.collect(carpenters, True)
-                prefill_state.collect(Item(str(Events.TIME_TRAVEL), ItemClassification.progression, None, self.player))
+                #if dungeon == Dungeons.GANONS_CASTLE:
+                #    bridge = Item(str(LocalEvents.HC_OGC_RAINBOW_BRIDGE_BUILT), ItemClassification.progression, None, self.player)
+                #    prefill_state.collect(bridge, True)
+                #if dungeon == Dungeons.GERUDO_TRAINING_GROUNDS:
+                #    carpenters = Item(str(Events.RESCUED_ALL_CARPENTERS), ItemClassification.progression, None, self.player)
+                #    prefill_state.collect(carpenters, True)
+                #if dungeon == Dungeons.SPIRIT_TEMPLE:
+                #    # Don't grant time time travel for spirit temple, 
+                #    # let logic find a way to time travel if it wants to place items in the age restricted locations
+                #    # Assume we have any missing keys
+                #    for key in key_any_dungeon:
+                #        prefill_state.collect(self.create_item(key), True)
+                #    for key in key_overworld:
+                #        prefill_state.collect(self.create_item(key), True)
+                #    pass
+                #else:
+                #    prefill_state.collect(Item(str(Events.TIME_TRAVEL), ItemClassification.progression, None, self.player), True)
+                for key in key_any_dungeon:
+                    prefill_state.collect(self.create_item(key), True)
+                for key in key_overworld:
+                    prefill_state.collect(self.create_item(key), True)
+                for other_dungeon, other_keys in key_own_dungeon.items():
+                    if dungeon == other_dungeon:
+                        continue
+                    for other_key in other_keys:
+                        prefill_state.collect(self.create_item(other_key), True)
                 prefill_state.sweep_for_advancements()
 
                 # use full dungeon accessability as the completion goal for this dungeon
@@ -411,8 +428,7 @@ class SohWorld(World):
         prefill_state = CollectionState(self.multiworld)
         for item in self.item_pool:
             prefill_state.collect(item, True)
-        for region, shop in all_shop_locations:
-            for slot, item in shop.items():
+        for item in ShopItems.get_vanilla_shop_pool(self):
                 prefill_state.collect(self.create_item(item), True)
         for key in [key for key, data in item_data_table.items() if "Small Keys" in data.item_groups or "Boss Keys" in data.item_groups]:
             prefill_state.collect(self.create_item(key), True)

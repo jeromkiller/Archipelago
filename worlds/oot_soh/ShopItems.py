@@ -162,6 +162,33 @@ vanilla_items_to_add: list[list[Items]] = [
         Items.BUY_HEART, Items.BUY_HEART, Items.BUY_HEART, Items.BUY_HEART],
 ]
 
+def get_vanilla_shop_pool(world: "SohWorld") -> list[Items]:
+    vanilla_shop_pool = list[Items]()
+    if not world.options.shuffle_shops:
+        for region, shop in all_shop_locations:
+            for item in shop.values():
+                vanilla_shop_pool.append(item)
+        return vanilla_shop_pool
+
+    num_vanilla = 8 - world.options.shuffle_shops_item_amount
+    for i in range(0, num_vanilla):
+        vanilla_shop_pool += vanilla_items_to_add[i]
+    return vanilla_shop_pool
+
+def get_vanilla_shop_locations(world: "SohWorld") -> list[str]:
+    vanilla_shop_slots = list[str]()
+    if not world.options.shuffle_shops:
+        for region, shop in all_shop_locations:
+            for slot in shop.keys():
+                vanilla_shop_slots.append(slot)
+        return vanilla_shop_slots
+
+    # select what shop slots to and vanilla items to shuffle
+    num_vanilla = 8 - world.options.shuffle_shops_item_amount
+    for region, shop in all_shop_locations:
+        vanilla_shop_slots += list(shop.keys())[0: num_vanilla]
+    return vanilla_shop_slots
+
 
 def fill_shop_items(world: "SohWorld") -> None:
     # if we're using UT, we just want to place the event shop items in their proper spots
@@ -180,14 +207,8 @@ def fill_shop_items(world: "SohWorld") -> None:
 
     # select what shop slots to and vanilla items to shuffle
     num_vanilla = 8 - world.options.shuffle_shops_item_amount
-    vanilla_pool = list[Items]()
-    vanilla_shop_slots = list[str]()
-
-    for i in range(0, num_vanilla):
-        vanilla_pool += vanilla_items_to_add[i]
-
-    for region, shop in all_shop_locations:
-        vanilla_shop_slots += list(shop.keys())[0: num_vanilla]
+    vanilla_pool = get_vanilla_shop_pool(world)
+    vanilla_shop_slots = get_vanilla_shop_locations(world)
 
     vanilla_shop_locations = [world.get_location(slot) for slot in vanilla_shop_slots]
     vanilla_items = [world.create_item(item) for item in vanilla_pool]
