@@ -44,95 +44,95 @@ vanilla_shop_prices: dict[Items, int] = {
 }
 
 
-shop_locations_kf_shop: dict[str, Items] = {
-    "KF Shop Item 1": Items.BUY_DEKU_SHIELD,
-    "KF Shop Item 2": Items.BUY_DEKU_NUTS5,
-    "KF Shop Item 3": Items.BUY_DEKU_NUTS10,
-    "KF Shop Item 4": Items.BUY_DEKU_STICK1,
-    "KF Shop Item 5": Items.BUY_DEKU_SEEDS30,
-    "KF Shop Item 6": Items.BUY_ARROWS10,
-    "KF Shop Item 7": Items.BUY_ARROWS30,
-    "KF Shop Item 8": Items.BUY_HEART,
+shop_locations_kf_shop: dict[Locations, Items] = {
+    Locations.KF_SHOP_ITEM1: Items.BUY_DEKU_SHIELD,
+    Locations.KF_SHOP_ITEM2: Items.BUY_DEKU_NUTS5,
+    Locations.KF_SHOP_ITEM3: Items.BUY_DEKU_NUTS10,
+    Locations.KF_SHOP_ITEM4: Items.BUY_DEKU_STICK1,
+    Locations.KF_SHOP_ITEM5: Items.BUY_DEKU_SEEDS30,
+    Locations.KF_SHOP_ITEM6: Items.BUY_ARROWS10,
+    Locations.KF_SHOP_ITEM7: Items.BUY_ARROWS30,
+    Locations.KF_SHOP_ITEM8: Items.BUY_HEART,
 }
 
-shop_locations_market_bazaar: dict[str, Items] = {
-    "Market Bazaar Item 1": Items.BUY_HYLIAN_SHIELD,
-    "Market Bazaar Item 2": Items.BUY_BOMBS535,
-    "Market Bazaar Item 3": Items.BUY_DEKU_NUTS5,
-    "Market Bazaar Item 4": Items.BUY_HEART,
-    "Market Bazaar Item 5": Items.BUY_ARROWS10,
-    "Market Bazaar Item 6": Items.BUY_ARROWS50,
-    "Market Bazaar Item 7": Items.BUY_DEKU_STICK1,
-    "Market Bazaar Item 8": Items.BUY_ARROWS30,
+shop_locations_market_bazaar: dict[Locations, Items] = {
+    Locations.MARKET_BAZAAR_ITEM1: Items.BUY_HYLIAN_SHIELD,
+    Locations.MARKET_BAZAAR_ITEM2: Items.BUY_BOMBS535,
+    Locations.MARKET_BAZAAR_ITEM3: Items.BUY_DEKU_NUTS5,
+    Locations.MARKET_BAZAAR_ITEM4: Items.BUY_HEART,
+    Locations.MARKET_BAZAAR_ITEM5: Items.BUY_ARROWS10,
+    Locations.MARKET_BAZAAR_ITEM6: Items.BUY_ARROWS50,
+    Locations.MARKET_BAZAAR_ITEM7: Items.BUY_DEKU_STICK1,
+    Locations.MARKET_BAZAAR_ITEM8: Items.BUY_ARROWS30,
 }
 
-shop_locations_market_potion_shop: dict[str, Items] = {
-    "Market Potion Shop Item 1": Items.BUY_GREEN_POTION,
-    "Market Potion Shop Item 2": Items.BUY_BLUE_FIRE,
-    "Market Potion Shop Item 3": Items.BUY_RED_POTION30,
-    "Market Potion Shop Item 4": Items.BUY_FAIRYS_SPIRIT,
-    "Market Potion Shop Item 5": Items.BUY_DEKU_NUTS5,
-    "Market Potion Shop Item 6": Items.BUY_BOTTLE_BUG,
-    "Market Potion Shop Item 7": Items.BUY_POE,
-    "Market Potion Shop Item 8": Items.BUY_FISH,
+shop_locations_market_potion_shop: dict[Locations, Items] = {
+    Locations.MARKET_POTION_SHOP_ITEM1: Items.BUY_GREEN_POTION,
+    Locations.MARKET_POTION_SHOP_ITEM2: Items.BUY_BLUE_FIRE,
+    Locations.MARKET_POTION_SHOP_ITEM3: Items.BUY_RED_POTION30,
+    Locations.MARKET_POTION_SHOP_ITEM4: Items.BUY_FAIRYS_SPIRIT,
+    Locations.MARKET_POTION_SHOP_ITEM5: Items.BUY_DEKU_NUTS5,
+    Locations.MARKET_POTION_SHOP_ITEM6: Items.BUY_BOTTLE_BUG,
+    Locations.MARKET_POTION_SHOP_ITEM7: Items.BUY_POE,
+    Locations.MARKET_POTION_SHOP_ITEM8: Items.BUY_FISH,
 }
 
-shop_locations_market_bombchu_shop: dict[str, Items] = {
-    "Market Bombchu Shop Item 1": Items.BUY_BOMBCHUS10,
-    "Market Bombchu Shop Item 2": Items.BUY_BOMBCHUS10,
-    "Market Bombchu Shop Item 3": Items.BUY_BOMBCHUS10,
-    "Market Bombchu Shop Item 4": Items.BUY_BOMBCHUS10,
-    "Market Bombchu Shop Item 5": Items.BUY_BOMBCHUS20,
-    "Market Bombchu Shop Item 6": Items.BUY_BOMBCHUS20,
-    "Market Bombchu Shop Item 7": Items.BUY_BOMBCHUS20,
-    "Market Bombchu Shop Item 8": Items.BUY_BOMBCHUS20,
+shop_locations_market_bombchu_shop: dict[Locations, Items] = {
+    Locations.MARKET_BOMBCHU_SHOP_ITEM1: Items.BUY_BOMBCHUS10,
+    Locations.MARKET_BOMBCHU_SHOP_ITEM2: Items.BUY_BOMBCHUS10,
+    Locations.MARKET_BOMBCHU_SHOP_ITEM3: Items.BUY_BOMBCHUS10,
+    Locations.MARKET_BOMBCHU_SHOP_ITEM4: Items.BUY_BOMBCHUS10,
+    Locations.MARKET_BOMBCHU_SHOP_ITEM5: Items.BUY_BOMBCHUS20,
+    Locations.MARKET_BOMBCHU_SHOP_ITEM6: Items.BUY_BOMBCHUS20,
+    Locations.MARKET_BOMBCHU_SHOP_ITEM7: Items.BUY_BOMBCHUS20,
+    Locations.MARKET_BOMBCHU_SHOP_ITEM8: Items.BUY_BOMBCHUS20,
 }
 
-shop_locations_kak_bazaar: dict[str, Items] = {
-    "Kak Bazaar Item 1": Items.BUY_HYLIAN_SHIELD,
-    "Kak Bazaar Item 2": Items.BUY_BOMBS535,
-    "Kak Bazaar Item 3": Items.BUY_DEKU_NUTS5,
-    "Kak Bazaar Item 4": Items.BUY_HEART,
-    "Kak Bazaar Item 5": Items.BUY_ARROWS10,
-    "Kak Bazaar Item 6": Items.BUY_ARROWS50,
-    "Kak Bazaar Item 7": Items.BUY_DEKU_STICK1,
-    "Kak Bazaar Item 8": Items.BUY_ARROWS30,
+shop_locations_kak_bazaar: dict[Locations, Items] = {
+    Locations.KAK_BAZAAR_ITEM1: Items.BUY_HYLIAN_SHIELD,
+    Locations.KAK_BAZAAR_ITEM2: Items.BUY_BOMBS535,
+    Locations.KAK_BAZAAR_ITEM3: Items.BUY_DEKU_NUTS5,
+    Locations.KAK_BAZAAR_ITEM4: Items.BUY_HEART,
+    Locations.KAK_BAZAAR_ITEM5: Items.BUY_ARROWS10,
+    Locations.KAK_BAZAAR_ITEM6: Items.BUY_ARROWS50,
+    Locations.KAK_BAZAAR_ITEM7: Items.BUY_DEKU_STICK1,
+    Locations.KAK_BAZAAR_ITEM8: Items.BUY_ARROWS30,
 }
 
-shop_locations_kak_potion_shop: dict[str, Items] = {
-    "Kak Potion Shop Item 1": Items.BUY_GREEN_POTION,
-    "Kak Potion Shop Item 2": Items.BUY_BLUE_FIRE,
-    "Kak Potion Shop Item 3": Items.BUY_RED_POTION30,
-    "Kak Potion Shop Item 4": Items.BUY_FAIRYS_SPIRIT,
-    "Kak Potion Shop Item 5": Items.BUY_DEKU_NUTS5,
-    "Kak Potion Shop Item 6": Items.BUY_BOTTLE_BUG,
-    "Kak Potion Shop Item 7": Items.BUY_POE,
-    "Kak Potion Shop Item 8": Items.BUY_FISH,
+shop_locations_kak_potion_shop: dict[Locations, Items] = {
+    Locations.KAK_POTION_SHOP_ITEM1: Items.BUY_GREEN_POTION,
+    Locations.KAK_POTION_SHOP_ITEM2: Items.BUY_BLUE_FIRE,
+    Locations.KAK_POTION_SHOP_ITEM3: Items.BUY_RED_POTION30,
+    Locations.KAK_POTION_SHOP_ITEM4: Items.BUY_FAIRYS_SPIRIT,
+    Locations.KAK_POTION_SHOP_ITEM5: Items.BUY_DEKU_NUTS5,
+    Locations.KAK_POTION_SHOP_ITEM6: Items.BUY_BOTTLE_BUG,
+    Locations.KAK_POTION_SHOP_ITEM7: Items.BUY_POE,
+    Locations.KAK_POTION_SHOP_ITEM8: Items.BUY_FISH,
 }
 
-shop_locations_gc_shop: dict[str, Items] = {
-    "GC Shop Item 1": Items.BUY_BOMBS525,
-    "GC Shop Item 2": Items.BUY_BOMBS10,
-    "GC Shop Item 3": Items.BUY_BOMBS20,
-    "GC Shop Item 4": Items.BUY_BOMBS30,
-    "GC Shop Item 5": Items.BUY_GORON_TUNIC,
-    "GC Shop Item 6": Items.BUY_HEART,
-    "GC Shop Item 7": Items.BUY_RED_POTION40,
-    "GC Shop Item 8": Items.BUY_HEART,
+shop_locations_gc_shop: dict[Locations, Items] = {
+    Locations.GC_SHOP_ITEM1: Items.BUY_BOMBS525,
+    Locations.GC_SHOP_ITEM2: Items.BUY_BOMBS10,
+    Locations.GC_SHOP_ITEM3: Items.BUY_BOMBS20,
+    Locations.GC_SHOP_ITEM4: Items.BUY_BOMBS30,
+    Locations.GC_SHOP_ITEM5: Items.BUY_GORON_TUNIC,
+    Locations.GC_SHOP_ITEM6: Items.BUY_HEART,
+    Locations.GC_SHOP_ITEM7: Items.BUY_RED_POTION40,
+    Locations.GC_SHOP_ITEM8: Items.BUY_HEART,
 }
 
-shop_locations_zd_shop: dict[str, Items] = {
-    "ZD Shop Item 1": Items.BUY_ZORA_TUNIC,
-    "ZD Shop Item 2": Items.BUY_ARROWS10,
-    "ZD Shop Item 3": Items.BUY_HEART,
-    "ZD Shop Item 4": Items.BUY_ARROWS30,
-    "ZD Shop Item 5": Items.BUY_DEKU_NUTS5,
-    "ZD Shop Item 6": Items.BUY_ARROWS50,
-    "ZD Shop Item 7": Items.BUY_FISH,
-    "ZD Shop Item 8": Items.BUY_RED_POTION30,
+shop_locations_zd_shop: dict[Locations, Items] = {
+    Locations.ZD_SHOP_ITEM1: Items.BUY_ZORA_TUNIC,
+    Locations.ZD_SHOP_ITEM2: Items.BUY_ARROWS10,
+    Locations.ZD_SHOP_ITEM3: Items.BUY_HEART,
+    Locations.ZD_SHOP_ITEM4: Items.BUY_ARROWS30,
+    Locations.ZD_SHOP_ITEM5: Items.BUY_DEKU_NUTS5,
+    Locations.ZD_SHOP_ITEM6: Items.BUY_ARROWS50,
+    Locations.ZD_SHOP_ITEM7: Items.BUY_FISH,
+    Locations.ZD_SHOP_ITEM8: Items.BUY_RED_POTION30,
 }
 
-all_shop_locations: list[tuple[Regions, dict[str, Items]]] = [
+all_shop_locations: list[tuple[Regions, dict[Locations, Items]]] = [
     (Regions.KF_KOKIRI_SHOP, shop_locations_kf_shop),
     (Regions.MARKET_BAZAAR, shop_locations_market_bazaar),
     (Regions.MARKET_POTION_SHOP, shop_locations_market_potion_shop),
