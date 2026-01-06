@@ -3850,6 +3850,22 @@ class TokenCounts(IntEnum):
     OVERWORLD = 56
     TOTAL = DUNGEON + OVERWORLD
 
+class KeyShuffleLocations(Enum):
+    DEKU_TREE = auto()
+    DODONGOS_CAVERN = auto()
+    JABU_JABUS_BELLY = auto()
+    FOREST_TEMPLE = auto()
+    FIRE_TEMPLE = auto()
+    ICE_CAVERN = auto()
+    WATER_TEMPLE = auto()
+    SPIRIT_TEMPLE = auto()
+    SHADOW_TEMPLE = auto()
+    BOTTOM_OF_THE_WELL = auto()
+    GERUDO_TRAINING_GROUNDS = auto()
+    GANONS_CASTLE = auto()
+    ANY_DUNGEON = auto()
+    OVERWORLD = auto()
+
 class Dungeons(Enum):
     DEKU_TREE = auto()
     DODONGOS_CAVERN = auto()
