@@ -1,7 +1,7 @@
 import orjson
 import pkgutil
 
-from typing import Any, List, ClassVar
+from typing import Any, ClassVar
 
 from BaseClasses import CollectionState, Item, Tutorial, ItemClassification, Location
 from worlds.AutoWorld import WebWorld, World
@@ -13,14 +13,14 @@ from .Regions import create_regions_and_locations, place_locked_items, dungeon_r
 from .Enums import *
 from .ItemPool import create_item_pool, create_filler_item_pool, create_triforce_pieces, get_filler_item
 from . import RegionAgeAccess
+from .DungeonRewardShuffle import pre_fill_dungeon, get_pre_fill_rewards
+from .KeyShuffle import pre_fill_keys, get_pre_fill_keys
 from .ShopItems import fill_shop_items, generate_scrub_prices, generate_merchant_prices, set_price_rules, all_shop_locations
-from Fill import fill_restrictive
 from .Presets import oot_soh_options_presets
 from .UniversalTracker import setup_options_from_slot_data
 from settings import Group, Bool
-from Options import OptionError, Toggle
-from .LogicHelpers import wallet_capacities, key_to_ring
-from collections import namedtuple
+from Options import OptionError
+from .LogicHelpers import wallet_capacities
 
 import logging
 logger = logging.getLogger("SOH_OOT")
@@ -172,8 +172,8 @@ class SohWorld(World):
             self.options.gerudo_fortress_key_ring.value = False
 
         # generate the prefill pool
-        self.pre_fill_pool += self.get_pre_fill_rewards()
-        for key_shuffle in self.get_pre_fill_keys().values():
+        self.pre_fill_pool += get_pre_fill_rewards(self)
+        for key_shuffle in get_pre_fill_keys(self).values():
             self.pre_fill_pool += key_shuffle
         self.pre_fill_pool += ShopItems.get_vanilla_shop_pool(self)
 
@@ -237,158 +237,6 @@ class SohWorld(World):
             prefill_state.collect(self.create_item(item), True)
         prefill_state.sweep_for_advancements()
         return prefill_state
-    
-    def get_pre_fill_rewards(self) -> list[Items]:
-        if self.options.shuffle_dungeon_rewards != "dungeons":
-            return list()
-        return list(dungeon_reward_item_mapping.values())
-
-    def get_pre_fill_keys(self) -> dict[KeyShuffleLocations, list[Items]]:
-        key_shuffle_locations = dict[KeyShuffleLocations, list[Items]]()
-        for location_type in KeyShuffleLocations:
-            key_shuffle_locations[location_type] = list[Items]()
-
-        # Boss Keys
-        if self.options.boss_key_shuffle == "own_dungeon":
-            key_shuffle_locations[KeyShuffleLocations.FOREST_TEMPLE].append(Items.FOREST_TEMPLE_BOSS_KEY)
-            key_shuffle_locations[KeyShuffleLocations.FIRE_TEMPLE].append(Items.FIRE_TEMPLE_BOSS_KEY)
-            key_shuffle_locations[KeyShuffleLocations.WATER_TEMPLE].append(Items.WATER_TEMPLE_BOSS_KEY)
-            key_shuffle_locations[KeyShuffleLocations.SPIRIT_TEMPLE].append(Items.SPIRIT_TEMPLE_BOSS_KEY)
-            key_shuffle_locations[KeyShuffleLocations.SHADOW_TEMPLE].append(Items.SHADOW_TEMPLE_BOSS_KEY)
-        elif self.options.boss_key_shuffle == "any_dungeon":
-            key_shuffle_locations[KeyShuffleLocations.ANY_DUNGEON] += [Items.FOREST_TEMPLE_BOSS_KEY, Items.FIRE_TEMPLE_BOSS_KEY, Items.WATER_TEMPLE_BOSS_KEY, Items.SPIRIT_TEMPLE_BOSS_KEY, Items.SHADOW_TEMPLE_BOSS_KEY]
-        elif self.options.boss_key_shuffle == "overworld":
-            key_shuffle_locations[KeyShuffleLocations.OVERWORLD] += [Items.FOREST_TEMPLE_BOSS_KEY, Items.FIRE_TEMPLE_BOSS_KEY, Items.WATER_TEMPLE_BOSS_KEY, Items.SPIRIT_TEMPLE_BOSS_KEY, Items.SHADOW_TEMPLE_BOSS_KEY]
-
-        # Small Keys
-        option_mapping = namedtuple('Key_Mapping', ['Dungeon', 'Option', 'Quantity'])
-        small_key_option_mapping = {
-            Items.FOREST_TEMPLE_SMALL_KEY: option_mapping(KeyShuffleLocations.FOREST_TEMPLE, self.options.forest_temple_key_ring, item_data_table[Items.FOREST_TEMPLE_SMALL_KEY].quantity_in_item_pool),
-            Items.FIRE_TEMPLE_SMALL_KEY: option_mapping(KeyShuffleLocations.FIRE_TEMPLE, self.options.fire_temple_key_ring, item_data_table[Items.FIRE_TEMPLE_SMALL_KEY].quantity_in_item_pool),
-            Items.WATER_TEMPLE_SMALL_KEY: option_mapping(KeyShuffleLocations.WATER_TEMPLE, self.options.water_temple_key_ring, item_data_table[Items.WATER_TEMPLE_SMALL_KEY].quantity_in_item_pool),
-            Items.SPIRIT_TEMPLE_SMALL_KEY: option_mapping(KeyShuffleLocations.SPIRIT_TEMPLE, self.options.spirit_temple_key_ring, item_data_table[Items.SPIRIT_TEMPLE_SMALL_KEY].quantity_in_item_pool),
-            Items.SHADOW_TEMPLE_SMALL_KEY: option_mapping(KeyShuffleLocations.SHADOW_TEMPLE, self.options.shadow_temple_key_ring, item_data_table[Items.SHADOW_TEMPLE_SMALL_KEY].quantity_in_item_pool),
-            Items.BOTTOM_OF_THE_WELL_SMALL_KEY: option_mapping(KeyShuffleLocations.BOTTOM_OF_THE_WELL, self.options.bottom_of_the_well_key_ring, item_data_table[Items.BOTTOM_OF_THE_WELL_SMALL_KEY].quantity_in_item_pool),
-            Items.GANONS_CASTLE_SMALL_KEY: option_mapping(KeyShuffleLocations.GANONS_CASTLE, self.options.ganons_castle_key_ring, item_data_table[Items.GANONS_CASTLE_SMALL_KEY].quantity_in_item_pool),
-            Items.TRAINING_GROUND_SMALL_KEY: option_mapping(KeyShuffleLocations.GERUDO_TRAINING_GROUNDS, self.options.gerudo_training_ground_key_ring, item_data_table[Items.TRAINING_GROUND_SMALL_KEY].quantity_in_item_pool)
-        }
-        
-        if self.options.small_key_shuffle in ("own_dungeon", "any_dungeon", "overworld"):
-            # Put the small keys or keyrings in the appropriate pool
-            for key, data in small_key_option_mapping.items():
-                dungeon = data.Dungeon
-                key_ring_option = data.Option
-
-                if key_ring_option:
-                    item = key_to_ring[key]
-                    count = 1
-                else:
-                    item = key
-                    count = data.Quantity
-
-                if self.options.small_key_shuffle == "own_dungeon":
-                    for _ in range(count):
-                        key_shuffle_locations[dungeon].append(item)
-                elif self.options.small_key_shuffle == "any_dungeon":
-                    for _ in range(count):
-                        key_shuffle_locations[KeyShuffleLocations.ANY_DUNGEON].append(item)
-                elif self.options.small_key_shuffle == "overworld":
-                    for _ in range(count):
-                        key_shuffle_locations[KeyShuffleLocations.OVERWORLD].append(item)
-
-        # Gerudo Fortress Keys
-        if self.options.fortress_carpenters != "free":
-            if self.options.gerudo_fortress_key_shuffle == "any_dungeon":
-                if self.options.gerudo_fortress_key_ring and self.options.fortress_carpenters == "normal" and self.options.gerudo_fortress_key_shuffle != "vanilla":
-                    key_shuffle_locations[KeyShuffleLocations.ANY_DUNGEON].append(Items.GERUDO_FORTRESS_KEY_RING)
-                else:
-                    for _ in range(item_data_table[Items.GERUDO_FORTRESS_SMALL_KEY].quantity_in_item_pool if self.options.fortress_carpenters == "normal" else 1):
-                        key_shuffle_locations[KeyShuffleLocations.ANY_DUNGEON].append(Items.GERUDO_FORTRESS_SMALL_KEY)
-
-            elif self.options.gerudo_fortress_key_shuffle == "overworld":
-                if self.options.gerudo_fortress_key_ring and self.options.fortress_carpenters == "normal" and self.options.gerudo_fortress_key_shuffle != "vanilla":
-                    key_shuffle_locations[KeyShuffleLocations.OVERWORLD].append(Items.GERUDO_FORTRESS_KEY_RING)
-                else:
-                    for _ in range(item_data_table[Items.GERUDO_FORTRESS_SMALL_KEY].quantity_in_item_pool if self.options.fortress_carpenters == "normal" else 1):
-                        key_shuffle_locations[KeyShuffleLocations.OVERWORLD].append(Items.GERUDO_FORTRESS_SMALL_KEY)
-
-        return key_shuffle_locations
-
-    def pre_fill_keys(self) -> None:
-        all_locations: list[str] = [location.name for location in self.multiworld.get_unfilled_locations(self.player)]
-        reserved_locations: list[Locations] = []
-
-        # Reserve dungeon reward locations if a dungeon reward should be there
-        if self.options.shuffle_dungeon_rewards != "anywhere":
-            reserved_locations += [location for location in dungeon_reward_item_mapping.keys()]
-
-        # Reserve Shop Locations       # todo, only reserve vanilla shop slots
-        for data in all_shop_locations:
-            for location in data[1].keys():
-                reserved_locations.append(location)
-
-        key_shuffle_keys = self.get_pre_fill_keys()
-        key_shuffle_locations = dict[KeyShuffleLocations, list[Locations]]()
-        for location_type in KeyShuffleLocations:
-            key_shuffle_locations[location_type] = list[Location]()
-
-        # This loops through all unfilled locations in the players world, removes any from our reserved list (Shops and Dungeon Rewards if applicable), then sorts them into three categories: Overworld, Any Dungeon, and Own Dungeon
-        for name, data in location_data_table.items():
-            if name in all_locations and name not in reserved_locations:
-                if data.key_suffle_location == None:
-                    key_shuffle_locations[KeyShuffleLocations.OVERWORLD].append(Locations(name))
-                else:
-                    key_shuffle_locations[KeyShuffleLocations.ANY_DUNGEON].append(Locations(name))
-                    key_shuffle_locations[data.key_suffle_location].append(Locations(name))
-
-        # use full dungeon accessability as the goal for filling
-        all_dungeon_location_goal = [self.get_location(loc) for loc in key_shuffle_locations[KeyShuffleLocations.ANY_DUNGEON]]
-        self.multiworld.completion_condition[self.player] = lambda state: all([state.can_reach(loc) for loc in all_dungeon_location_goal])
-
-        # Resolve own_dungeon, any_dungeon and overworld options
-        for shuffle_location, keys in key_shuffle_keys.items():
-            if not keys:
-                continue
-
-            for key in keys:
-                self.pre_fill_pool.remove(key)
-
-            prefill_state = self.get_pre_fill_state()
-            found = False
-            for other_location, other_keys in key_shuffle_keys.items():
-                if shuffle_location == other_location:
-                    found = True
-                    continue
-                if found:
-                    for other_key in other_keys:
-                        prefill_state.collect(self.create_item(other_key), True)
-            prefill_state.sweep_for_advancements()
-
-            empty_locations = self.get_empty_locations_from_list_shuffled(key_shuffle_locations[shuffle_location])
-            key_items = [self.create_item(str(key)) for key in keys]
-
-            fill_restrictive(self.multiworld, prefill_state, empty_locations, key_items, single_player_placement=True, lock=True)
-
-
-    def pre_fill_dungeon(self) -> None:
-        dungeon_reward_locations = [self.get_location(location.value)
-                                    for location in dungeon_reward_item_mapping.keys()]
-        
-        dungeon_reward_items = list[SohItem]()
-        for item in self.get_pre_fill_rewards():
-            self.pre_fill_pool.remove(item)
-            dungeon_reward_items.append(self.create_item(item))
-        self.random.shuffle(dungeon_reward_items)
-
-        completion_items = [c.name for c in dungeon_reward_items]
-        self.multiworld.completion_condition[self.player] = lambda state: state.has_all(completion_items, self.player)
-
-        prefill_state = self.get_pre_fill_state()
-
-        # Place dungeon rewards
-        fill_restrictive(self.multiworld, prefill_state, dungeon_reward_locations,
-                         dungeon_reward_items, single_player_placement=True, lock=True)
-        
 
     def create_items(self) -> None:
         # these are for making the progressive items collect/remove work properly
@@ -417,10 +265,9 @@ class SohWorld(World):
         create_filler_item_pool(self)
 
         # these place items, so they should be done during create_items
-        if self.options.shuffle_dungeon_rewards == "dungeons":
-            self.pre_fill_dungeon()
+        pre_fill_dungeon(self)
 
-        self.pre_fill_keys()
+        pre_fill_keys(self)
 
         fill_shop_items(self)
 
