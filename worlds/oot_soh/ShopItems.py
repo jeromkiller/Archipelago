@@ -6,6 +6,7 @@ from BaseClasses import CollectionState
 from .LogicHelpers import rule_wrapper, can_afford
 from .Locations import scrubs_location_table, merchants_items_location_table, scrubs_one_time_only
 from .Enums import *
+from . import SohItem
 
 if TYPE_CHECKING:
     from . import SohWorld
@@ -208,27 +209,23 @@ def fill_shop_items(world: "SohWorld") -> None:
     # select what shop slots to and vanilla items to shuffle
     num_vanilla = 8 - world.options.shuffle_shops_item_amount
     vanilla_pool = get_vanilla_shop_pool(world)
-    vanilla_shop_slots = get_vanilla_shop_locations(world)
+    vanilla_items = list[SohItem]()
+    for item in vanilla_pool:
+        world.pre_fill_pool.remove(item)
+        vanilla_items.append(world.create_item(item))
 
+    vanilla_shop_slots = get_vanilla_shop_locations(world)
     vanilla_shop_locations = [world.get_location(slot) for slot in vanilla_shop_slots]
-    vanilla_items = [world.create_item(item) for item in vanilla_pool]
     world.random.shuffle(vanilla_items)
 
-    # create a filled copy of the state so the multiworld can place the vanilla shop items using logic
-    prefill_state = CollectionState(world.multiworld)
-    for item in world.item_pool:
-        prefill_state.collect(item, True)
-    prefill_state.sweep_for_advancements()
-
-    original_condition = world.multiworld.completion_condition[world.player]
     goal_locations = [loc for loc in vanilla_shop_locations]
     world.multiworld.completion_condition[world.player] = lambda state: all([state.can_reach(loc) for loc in goal_locations])
+
+    prefill_state = world.get_pre_fill_state()
 
     # place the vanilla shop items
     fill_restrictive(world.multiworld, prefill_state, vanilla_shop_locations,
                      vanilla_items, single_player_placement=True, lock=True)
-    
-    world.multiworld.completion_condition[world.player] = original_condition
     
     for slot in vanilla_shop_slots:
         location = world.get_location(slot)

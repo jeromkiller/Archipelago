@@ -85,6 +85,7 @@ class SohWorld(World):
         self.triforce_pieces_required: int = 0
         self.vanilla_progressive_skulltula_count: int = 0
         self.randomized_progressive_skulltula_count: int = 0
+        self.pre_fill_pool = list[Items]()
 
         apworld_manifest = orjson.loads(pkgutil.get_data(
             __name__, "archipelago.json").decode("utf-8"))
@@ -170,6 +171,12 @@ class SohWorld(World):
         elif self.options.key_rings == "selection" and self.options.fortress_carpenters == "normal" and self.options.gerudo_fortress_key_shuffle == "vanilla":
             self.options.gerudo_fortress_key_ring.value = False
 
+        # generate the prefill pool
+        self.pre_fill_pool += self.get_pre_fill_rewards()
+        for key_shuffle in self.get_pre_fill_keys().values():
+            self.pre_fill_pool += key_shuffle
+        self.pre_fill_pool += ShopItems.get_vanilla_shop_pool(self)
+
         if self.using_ut:
             self.options.gerudo_fortress_key_ring.value = self.passthrough["gerudo_fortress_key_ring"]
             self.options.forest_temple_key_ring.value = self.passthrough["forest_temple_key_ring"]
@@ -207,7 +214,7 @@ class SohWorld(World):
 
     def set_completion_rule(self) -> None:
         if not self.options.true_no_logic:
-            # Completion condition.
+            # Actual completion condition.
             self.multiworld.completion_condition[self.player] = lambda state: state.has(
                 Events.GAME_COMPLETED.value, self.player)
             
@@ -221,6 +228,20 @@ class SohWorld(World):
         self.random.shuffle(locations)
 
         return locations
+    
+    def get_pre_fill_state(self) -> CollectionState:
+        prefill_state = CollectionState(self.multiworld)
+        for item in self.item_pool:
+            prefill_state.collect(item, True)
+        for item in self.pre_fill_pool:
+            prefill_state.collect(self.create_item(item), True)
+        prefill_state.sweep_for_advancements()
+        return prefill_state
+    
+    def get_pre_fill_rewards(self) -> list[Items]:
+        if self.options.shuffle_dungeon_rewards != "dungeons":
+            return list()
+        return list(dungeon_reward_item_mapping.values())
 
     def get_pre_fill_keys(self) -> dict[KeyShuffleLocations, list[Items]]:
         key_shuffle_locations = dict[KeyShuffleLocations, list[Items]]()
@@ -293,20 +314,7 @@ class SohWorld(World):
 
         return key_shuffle_locations
 
-
     def pre_fill_keys(self) -> None:
-        def get_prefill_state(prefill_key_pool: list[Items]):
-            prefill_state = CollectionState(self.multiworld)
-            for item in self.item_pool:
-                #if item.name not in (Items.GANONS_CASTLE_BOSS_KEY, Items.GOLD_SKULLTULA_TOKEN, Items.GREG_THE_GREEN_RUPEE):
-                prefill_state.collect(item, True)
-            for item in ShopItems.get_vanilla_shop_pool(self):
-                prefill_state.collect(self.create_item(item), True)
-            for key in prefill_key_pool:
-                prefill_state.collect(self.create_item(key), True)
-            prefill_state.sweep_for_advancements()
-            return prefill_state
-
         all_locations: list[str] = [location.name for location in self.multiworld.get_unfilled_locations(self.player)]
         reserved_locations: list[Locations] = []
 
@@ -324,29 +332,16 @@ class SohWorld(World):
         for location_type in KeyShuffleLocations:
             key_shuffle_locations[location_type] = list[Location]()
 
-        shuffle_location_map = {Dungeons.FOREST_TEMPLE: KeyShuffleLocations.FOREST_TEMPLE,
-                        Dungeons.FIRE_TEMPLE: KeyShuffleLocations.FIRE_TEMPLE,
-                        Dungeons.WATER_TEMPLE: KeyShuffleLocations.WATER_TEMPLE,
-                        Dungeons.SPIRIT_TEMPLE: KeyShuffleLocations.SPIRIT_TEMPLE,
-                        Dungeons.SHADOW_TEMPLE: KeyShuffleLocations.SHADOW_TEMPLE,
-                        Dungeons.BOTTOM_OF_THE_WELL: KeyShuffleLocations.BOTTOM_OF_THE_WELL,
-                        Dungeons.GANONS_CASTLE: KeyShuffleLocations.GANONS_CASTLE,
-                        Dungeons.GERUDO_TRAINING_GROUNDS: KeyShuffleLocations.GERUDO_TRAINING_GROUNDS}
-
         # This loops through all unfilled locations in the players world, removes any from our reserved list (Shops and Dungeon Rewards if applicable), then sorts them into three categories: Overworld, Any Dungeon, and Own Dungeon
         for name, data in location_data_table.items():
             if name in all_locations and name not in reserved_locations:
-                if data.dungeon == None:
+                if data.key_suffle_location == None:
                     key_shuffle_locations[KeyShuffleLocations.OVERWORLD].append(Locations(name))
                 else:
                     key_shuffle_locations[KeyShuffleLocations.ANY_DUNGEON].append(Locations(name))
+                    key_shuffle_locations[data.key_suffle_location].append(Locations(name))
 
-                    if data.dungeon in shuffle_location_map:
-                        dungeon = shuffle_location_map[data.dungeon]
-                        key_shuffle_locations[dungeon].append(Locations(name))
-
-        # use full dungeon accessability as the completion goal
-        original_condition = self.multiworld.completion_condition[self.player]
+        # use full dungeon accessability as the goal for filling
         all_dungeon_location_goal = [self.get_location(loc) for loc in key_shuffle_locations[KeyShuffleLocations.ANY_DUNGEON]]
         self.multiworld.completion_condition[self.player] = lambda state: all([state.can_reach(loc) for loc in all_dungeon_location_goal])
 
@@ -355,7 +350,10 @@ class SohWorld(World):
             if not keys:
                 continue
 
-            prefill_state = get_prefill_state([])
+            for key in keys:
+                self.pre_fill_pool.remove(key)
+
+            prefill_state = self.get_pre_fill_state()
             found = False
             for other_location, other_keys in key_shuffle_keys.items():
                 if shuffle_location == other_location:
@@ -370,40 +368,27 @@ class SohWorld(World):
             key_items = [self.create_item(str(key)) for key in keys]
 
             fill_restrictive(self.multiworld, prefill_state, empty_locations, key_items, single_player_placement=True, lock=True)
-        self.multiworld.completion_condition[self.player] = original_condition
 
 
     def pre_fill_dungeon(self) -> None:
-        # Prefill Dungeon Rewards. Need to collect the item pool and vanilla shop items before doing so.
-        # Create a filled copy of the state so the multiworld can place the dungeon rewards using logic
-        prefill_state = CollectionState(self.multiworld)
-        for item in self.item_pool:
-            prefill_state.collect(item, True)
-        for item in ShopItems.get_vanilla_shop_pool(self):
-                prefill_state.collect(self.create_item(item), True)
-        all_keys = list()
-        key_shuffles = self.get_pre_fill_keys()
-        for keys in key_shuffles.values():
-            all_keys += keys
-        for key in all_keys:
-            prefill_state.collect(self.create_item(key), True)
-        prefill_state.sweep_for_advancements()
-
         dungeon_reward_locations = [self.get_location(location.value)
                                     for location in dungeon_reward_item_mapping.keys()]
-        dungeon_reward_items = [self.create_item(
-            item.value) for item in dungeon_reward_item_mapping.values()]
+        
+        dungeon_reward_items = list[SohItem]()
+        for item in self.get_pre_fill_rewards():
+            self.pre_fill_pool.remove(item)
+            dungeon_reward_items.append(self.create_item(item))
         self.random.shuffle(dungeon_reward_items)
 
         completion_items = [c.name for c in dungeon_reward_items]
-        original_completion_rule = self.multiworld.completion_condition[self.player]
         self.multiworld.completion_condition[self.player] = lambda state: state.has_all(completion_items, self.player)
+
+        prefill_state = self.get_pre_fill_state()
 
         # Place dungeon rewards
         fill_restrictive(self.multiworld, prefill_state, dungeon_reward_locations,
                          dungeon_reward_items, single_player_placement=True, lock=True)
         
-        self.multiworld.completion_condition[self.player] = original_completion_rule
 
     def create_items(self) -> None:
         # these are for making the progressive items collect/remove work properly
@@ -431,8 +416,6 @@ class SohWorld(World):
 
         create_filler_item_pool(self)
 
-        self.set_completion_rule()
-
         # these place items, so they should be done during create_items
         if self.options.shuffle_dungeon_rewards == "dungeons":
             self.pre_fill_dungeon()
@@ -443,6 +426,8 @@ class SohWorld(World):
 
         # this one technically could be done later but why bother at this point
         set_price_rules(self)
+
+        self.set_completion_rule()
 
     def collect(self, state: CollectionState, item: Item) -> bool:
         changed = super().collect(state, item)
