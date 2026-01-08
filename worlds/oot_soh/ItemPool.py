@@ -4,6 +4,7 @@ from .Enums import *
 from .Items import item_data_table, filler_items, filler_bottles
 from .Regions import map_and_compass_vanilla_mapping
 from BaseClasses import ItemClassification
+from .SongShuffle import song_vanilla_locations
 
 if TYPE_CHECKING:
     from . import SohWorld
@@ -78,6 +79,11 @@ def create_item_pool(world: "SohWorld") -> None:
     # Fiary Ocarina and Ocarina of time
     if world.options.shuffle_ocarinas:
         items_to_create[Items.PROGRESSIVE_OCARINA] = 2
+
+    # Songs
+    if world.options.shuffle_songs == "anywhere":
+        for song in song_vanilla_locations.values():
+            items_to_create[song] = 1
 
     # Ocarina Buttons
     if world.options.shuffle_ocarina_buttons:
