@@ -358,6 +358,7 @@ class SohWorld(World):
             "triforce_hunt": self.options.triforce_hunt.value,
             "triforce_hunt_pieces_total": self.options.triforce_hunt_pieces_total.value,
             "triforce_hunt_pieces_required": self.triforce_pieces_required,
+            "shuffle_songs": self.options.shuffle_songs.value,
             "shuffle_skull_tokens": self.options.shuffle_skull_tokens.value,
             "skulls_sun_song": self.options.skulls_sun_song.value,
             "shuffle_kokiri_sword": self.options.shuffle_kokiri_sword.value,
