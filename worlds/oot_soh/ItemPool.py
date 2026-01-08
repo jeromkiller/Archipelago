@@ -292,22 +292,22 @@ def create_item_pool(world: "SohWorld") -> None:
             else:
                 items_to_create[Items.GERUDO_FORTRESS_SMALL_KEY] += 1
 
-            # TODO we don't have an option for membership card shuffle
-            items_to_create[Items.GERUDO_MEMBERSHIP_CARD] += 1
+            if world.options.shuffle_gerudo_membership_card:
+                items_to_create[Items.GERUDO_MEMBERSHIP_CARD] += 1
 
-            # TODO we don't have options for shuffling songs
-            items_to_create[Items.ZELDAS_LULLABY] += 1
-            items_to_create[Items.EPONAS_SONG] += 1
-            items_to_create[Items.SARIAS_SONG] += 1
-            items_to_create[Items.SUNS_SONG] += 1
-            items_to_create[Items.SONG_OF_TIME] += 1
-            items_to_create[Items.SONG_OF_STORMS] += 1
-            items_to_create[Items.MINUET_OF_FOREST] += 1
-            items_to_create[Items.BOLERO_OF_FIRE] += 1
-            items_to_create[Items.SERENADE_OF_WATER] += 1
-            items_to_create[Items.REQUIEM_OF_SPIRIT] += 1
-            items_to_create[Items.NOCTURNE_OF_SHADOW] += 1
-            items_to_create[Items.PRELUDE_OF_LIGHT] += 1
+            if world.options.shuffle_songs == "anywhere":
+                items_to_create[Items.ZELDAS_LULLABY] += 1
+                items_to_create[Items.EPONAS_SONG] += 1
+                items_to_create[Items.SARIAS_SONG] += 1
+                items_to_create[Items.SUNS_SONG] += 1
+                items_to_create[Items.SONG_OF_TIME] += 1
+                items_to_create[Items.SONG_OF_STORMS] += 1
+                items_to_create[Items.MINUET_OF_FOREST] += 1
+                items_to_create[Items.BOLERO_OF_FIRE] += 1
+                items_to_create[Items.SERENADE_OF_WATER] += 1
+                items_to_create[Items.REQUIEM_OF_SPIRIT] += 1
+                items_to_create[Items.NOCTURNE_OF_SHADOW] += 1
+                items_to_create[Items.PRELUDE_OF_LIGHT] += 1
 
         elif world.options.item_pool == "scarce":
             items_to_create[Items.PROGRESSIVE_BOMBCHU] = 3
