@@ -188,7 +188,7 @@ class SohWorld(World):
             self.pre_fill_pool += key_shuffle
         self.pre_fill_pool += ShopItems.get_vanilla_shop_pool(self)
 
-        if self.using_ut:
+        if self.using_ut:   # can't this get moved to 'UniversalTracker.py' ?
             self.options.gerudo_fortress_key_ring.value = self.passthrough[
                 "gerudo_fortress_key_ring"]
             self.options.forest_temple_key_ring.value = self.passthrough["forest_temple_key_ring"]
@@ -416,6 +416,15 @@ class SohWorld(World):
             "ganons_castle_boss_key_dungeons_required": self.options.ganons_castle_boss_key_dungeons_required.value,
             "ganons_castle_boss_key_skull_tokens_required": self.options.ganons_castle_boss_key_skull_tokens_required.value,
             "key_rings": self.options.key_rings.value,
+            "gerudo_fortress_key_ring": self.options.gerudo_fortress_key_ring.value,
+            "forest_temple_key_ring": self.options.forest_temple_key_ring.value,
+            "fire_temple_key_ring": self.options.fire_temple_key_ring.value,
+            "water_temple_key_ring": self.options.water_temple_key_ring.value,
+            "spirit_temple_key_ring": self.options.spirit_temple_key_ring.value,
+            "shadow_temple_key_ring": self.options.shadow_temple_key_ring.value,
+            "bottom_of_the_well_key_ring": self.options.bottom_of_the_well_key_ring.value,
+            "gerudo_training_ground_key_ring": self.options.gerudo_training_ground_key_ring.value,
+            "ganons_castle_key_ring": self.options.ganons_castle_key_ring.value,
             "big_poe_target_count": self.options.big_poe_target_count.value,
             "skip_child_zelda": self.options.skip_child_zelda.value,
             "skip_epona_race": self.options.skip_epona_race.value,

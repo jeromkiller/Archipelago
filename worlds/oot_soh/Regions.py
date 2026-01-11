@@ -417,9 +417,11 @@ def place_locked_items(world: "SohWorld") -> None:
         if world.options.starting_age == "adult":
             # Start with the master sword in your starting inventory
             world.multiworld.push_precollected(world.create_item(Items.MASTER_SWORD, create_as_event=True))
-        else:
-            world.get_location(Locations.MARKET_TOT_MASTER_SWORD).place_locked_item(
-                world.create_item(Items.MASTER_SWORD))
+
+        # place locked mastersword so this location doesn't get counted as an empty location
+        world.get_location(Locations.MARKET_TOT_MASTER_SWORD).place_locked_item(
+            world.create_item(Items.MASTER_SWORD, create_as_event=True))
+        world.get_location(Locations.MARKET_TOT_MASTER_SWORD).address = None
         
     # Place the Ocarinas on their vanilla locations if not shuffled
     if not world.options.shuffle_ocarinas:
