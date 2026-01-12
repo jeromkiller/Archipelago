@@ -1,0 +1,7 @@
+Ship of Harkinian:
+  enable_all_tricks: 'false'
+  skeleton_key: 'false'
+  tricks_in_logic: []
+  shuffle_dungeon_rewards: dungeons
+  shuffle_shops: 'true'
+  shuffle_shops_item_amount: 7

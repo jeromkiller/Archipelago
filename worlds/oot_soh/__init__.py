@@ -416,6 +416,7 @@ class SohWorld(World):
             "ganons_castle_boss_key_dungeons_required": self.options.ganons_castle_boss_key_dungeons_required.value,
             "ganons_castle_boss_key_skull_tokens_required": self.options.ganons_castle_boss_key_skull_tokens_required.value,
             "key_rings": self.options.key_rings.value,
+            "key_rings_count": self.options.key_rings_count.value,
             "gerudo_fortress_key_ring": self.options.gerudo_fortress_key_ring.value,
             "forest_temple_key_ring": self.options.forest_temple_key_ring.value,
             "fire_temple_key_ring": self.options.fire_temple_key_ring.value,
