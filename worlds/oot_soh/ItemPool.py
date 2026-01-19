@@ -295,7 +295,7 @@ def create_item_pool(world: "SohWorld") -> None:
     elif world.options.item_pool == "minimal":
         max_hearts = 3
 
-    starting_hearts: int = hearts((world.multiworld.state, None, world)) + 1
+    starting_hearts: int = hearts((world.multiworld.state, None, world))
     if starting_hearts < max_hearts:
         items_to_create[Items.PIECE_OF_HEART_WINNER] = 1
         items_to_create[Items.PIECE_OF_HEART] = 3
