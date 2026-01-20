@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 from worlds.generic.Rules import add_rule
 from Fill import fill_restrictive
 
-from .LogicHelpers import rule_wrapper, can_afford
+from .LogicHelpers import rule_wrapper, can_afford, can_afford_slot
 from .Locations import scrubs_location_table, merchants_items_location_table, scrubs_one_time_only
 from .Enums import *
 from . import SohItem
@@ -321,10 +321,9 @@ def set_price_rules(world: "SohWorld") -> None:
     # Shop Price Rules
     for region, shop in all_shop_locations:
         for slot in shop.keys():
-            price = world.shop_prices[slot]
-            def price_rule(bundle, p=price): return can_afford(p, bundle)
+            def shop_rule(bundle, s=slot): return can_afford_slot(str(s), bundle)
             location = world.get_location(slot)
-            add_rule(location, rule_wrapper.wrap(region, price_rule, world))
+            add_rule(location, rule_wrapper.wrap(region, shop_rule, world))
 
     # Scrub Price Rules
     if world.options.shuffle_scrubs:

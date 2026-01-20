@@ -255,7 +255,7 @@ class SohWorld(World):
         prefill_state.sweep_for_advancements()
         return prefill_state
     
-    def create_rules(self) -> None:
+    def set_rules(self) -> None:
         # Set price rules in advance
         generate_shop_prices(self)
         generate_scrub_prices(self)
