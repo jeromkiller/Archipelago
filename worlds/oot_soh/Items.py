@@ -312,6 +312,7 @@ item_data_table: dict[Items, SohItemData] = {
     Items.STICKS: SohItemData(None, child_only=True),
     Items.NUTS: SohItemData(None),
     Items.EPONA: SohItemData(None),
+    Items.RESERVATION: SohItemData(None),
     # Items.MAX: SohItemData( 279, IC.filler, 0 ),
     # Intentionally place the glitched item without a value. Everything else should be above this.
     Items.GLITCHED: SohItemData(None),

@@ -190,7 +190,22 @@ def get_vanilla_shop_locations(world: "SohWorld") -> list[str]:
     return vanilla_shop_slots
 
 
+def reserve_vanilla_shop_locations(world: "SohWorld") -> None:
+    vanilla_shop_slots = get_vanilla_shop_locations(world)
+    for slot in vanilla_shop_slots:
+        location = world.get_location(slot)
+        location.place_locked_item(world.create_item(Items.RESERVATION))
+
+def remove_vanilla_shop_reservations(world: "SohWorld") -> None:
+    vanilla_shop_slots = get_vanilla_shop_locations(world)
+    for slot in vanilla_shop_slots:
+        location = world.get_location(slot)
+        if location.item == world.create_item(Items.RESERVATION):
+            location.item = None
+            location.locked = False
+
 def fill_shop_items(world: "SohWorld") -> None:
+    remove_vanilla_shop_reservations(world)
     # if we're using UT, we just want to place the event shop items in their proper spots
     if world.using_ut:
         world.shop_vanilla_items = world.passthrough["shop_vanilla_items"]
@@ -202,7 +217,6 @@ def fill_shop_items(world: "SohWorld") -> None:
         return
 
     if not world.options.shuffle_shops:
-        no_shop_shuffle(world)
         return
 
     # select what shop slots to and vanilla items to shuffle
@@ -232,15 +246,6 @@ def fill_shop_items(world: "SohWorld") -> None:
         world.shop_prices[slot] = vanilla_shop_prices[Items(location.item.name)]
         world.shop_vanilla_items[slot] = location.item.name
 
-    min_shop_price = world.options.shuffle_shops_minimum_price.value
-    max_shop_price = world.options.shuffle_shops_maximum_price.value
-
-    for region, shop in all_shop_locations:
-        for slot in shop.keys():
-            if slot in world.shop_prices:
-                continue
-            world.shop_prices[slot] = create_random_price(min_shop_price, max_shop_price, world)
-
 
 def no_shop_shuffle(world: "SohWorld") -> None:
     # put everything in its place as plain vanilla
@@ -250,6 +255,18 @@ def no_shop_shuffle(world: "SohWorld") -> None:
             world.get_location(slot).place_locked_item(world.create_item(item))
             world.get_location(slot).address = None
             world.shop_vanilla_items[slot] = item.value
+
+
+def generate_shop_prices(world: "SohWorld") -> None:
+    if not world.options.shuffle_shops:
+        return
+
+    min_shop_price = world.options.shuffle_shops_minimum_price.value
+    max_shop_price = world.options.shuffle_shops_maximum_price.value
+
+    for region, shop in all_shop_locations:
+        for slot in shop.keys():
+            world.shop_prices[slot] = create_random_price(min_shop_price, max_shop_price, world)
 
 
 def generate_scrub_prices(world: "SohWorld") -> None:

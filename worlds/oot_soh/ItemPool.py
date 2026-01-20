@@ -601,15 +601,6 @@ def create_filler_item_pool(world: "SohWorld") -> None:
 def get_open_location_count(world: "SohWorld") -> int:
     open_location_count = len(world.multiworld.get_unfilled_locations(
         world.player)) - len(world.item_pool)
-    # Subtract vanilla shop items because they're prefilled later.
-    if world.options.shuffle_shops:
-        open_location_count -= (64 -
-                                (8 * world.options.shuffle_shops_item_amount))
-    else:
-        open_location_count -= 64
-    # Subtract dungeon rewards when set to dungeons as they're prefilled later.
-    if world.options.shuffle_dungeon_rewards == "dungeons":
-        open_location_count -= 9
 
     if world.options.boss_key_shuffle in ("own_dungeon", "any_dungeon", "overworld"):
         open_location_count -= 5
@@ -663,10 +654,6 @@ def get_open_location_count(world: "SohWorld") -> int:
 
     if world.options.maps_and_compasses in ("own_dungeon", "any_dungeon", "overworld"):
         open_location_count -= len(map_and_compass_vanilla_mapping)
-
-    if world.options.shuffle_songs in ("song_locations", "dungeon_rewards"):
-        for _ in song_vanilla_locations.values():
-            open_location_count -= 1
 
     return open_location_count
 

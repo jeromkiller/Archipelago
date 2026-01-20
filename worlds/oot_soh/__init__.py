@@ -16,7 +16,7 @@ from . import RegionAgeAccess
 from .DungeonRewardShuffle import pre_fill_dungeon, get_pre_fill_rewards
 from .KeyShuffle import pre_fill_keys, get_pre_fill_keys
 from .SongShuffle import pre_fill_songs, get_prefill_songs
-from .ShopItems import fill_shop_items, generate_scrub_prices, generate_merchant_prices, set_price_rules
+from .ShopItems import fill_shop_items, generate_shop_prices, generate_scrub_prices, generate_merchant_prices, set_price_rules
 from .Presets import oot_soh_options_presets
 from .UniversalTracker import setup_options_from_slot_data
 from settings import Group, Bool
@@ -205,23 +205,26 @@ class SohWorld(World):
     def create_regions(self) -> None:
         create_regions_and_locations(self)
         place_locked_items(self)
-        generate_scrub_prices(self)
-        generate_merchant_prices(self)
+        self.reserve_prefill_locations()
         for location in self.get_locations():
             location.name = str(location.name)
         for region in self.get_regions():
             region.name = str(region.name)
 
-        if self.options.true_no_logic:
-            for entrance in self.get_entrances():
-                entrance.access_rule = lambda state: True
-            for location in self.get_locations():
-                location.access_rule = lambda state: True
+    def reserve_prefill_locations(self) -> None:
+        DungeonRewardShuffle.reserve_dungeon_reward_locations(self)
+        SongShuffle.reserve_song_locations(self)
+        # Currently no reservations for key shuffle, 
+        # we can't know for sure what locations will get used and reserving everything is too restrictive
+        ShopItems.reserve_vanilla_shop_locations(self)
 
     def create_item(self, name: str, create_as_event: bool = False, classification: ItemClassification = None) -> SohItem:
         item_entry = Items(name)
         return SohItem(str(name), item_data_table[item_entry].classification if classification == None else classification,
                        None if create_as_event else item_data_table[item_entry].item_id, self.player)
+
+    def get_pre_fill_items(self) -> list[Item]:
+        return [self.create_item(item) for item in self.pre_fill_pool]
 
     def get_filler_item_name(self) -> str:
         return get_filler_item(self)
@@ -251,6 +254,20 @@ class SohWorld(World):
             prefill_state.collect(self.create_item(item), True)
         prefill_state.sweep_for_advancements()
         return prefill_state
+    
+    def create_rules(self) -> None:
+        # Set price rules in advance
+        generate_shop_prices(self)
+        generate_scrub_prices(self)
+        generate_merchant_prices(self)
+        set_price_rules(self)
+
+        # disregard all rules if no logic is in effect
+        if self.options.true_no_logic:
+            for entrance in self.get_entrances():
+                entrance.access_rule = lambda state: True
+            for location in self.get_locations():
+                location.access_rule = lambda state: True
 
     def create_items(self) -> None:
         # these are for making the progressive items collect/remove work properly
@@ -279,19 +296,17 @@ class SohWorld(World):
 
         create_filler_item_pool(self)
 
-        # these place items, so they should be done during create_items
+        self.set_completion_rule()
+
+    def pre_fill(self) -> None:
+        original_completion_goal = self.multiworld.completion_condition[self.player]
+
         pre_fill_dungeon(self)
-
         pre_fill_songs(self)
-
         pre_fill_keys(self)
-
         fill_shop_items(self)
 
-        # this one technically could be done later but why bother at this point
-        set_price_rules(self)
-
-        self.set_completion_rule()
+        self.multiworld.completion_condition[self.player] = original_completion_goal
 
     def collect(self, state: CollectionState, item: Item) -> bool:
         changed = super().collect(state, item)
