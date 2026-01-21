@@ -25,6 +25,21 @@ song_vanilla_locations: dict[Locations, Items] = {
     Locations.SHEIK_AT_TEMPLE: Items.PRELUDE_OF_LIGHT
 }
 
+dungeon_reward_locations: list[Locations] = [
+    Locations.DEKU_TREE_QUEEN_GOHMA_HEART_CONTAINER,
+    Locations.DODONGOS_CAVERN_KING_DODONGO_HEART_CONTAINER,
+    Locations.JABU_JABUS_BELLY_BARINADE_HEART_CONTAINER,
+    Locations.FOREST_TEMPLE_PHANTOM_GANON_HEART_CONTAINER,
+    Locations.FIRE_TEMPLE_VOLVAGIA_HEART_CONTAINER,
+    Locations.WATER_TEMPLE_MORPHA_HEART_CONTAINER,
+    Locations.SHADOW_TEMPLE_BONGO_BONGO_HEART_CONTAINER,
+    Locations.SPIRIT_TEMPLE_TWINROVA_HEART_CONTAINER,
+    Locations.SONG_FROM_IMPA,
+    Locations.SHEIK_IN_ICE_CAVERN,
+    Locations.BOTTOM_OF_THE_WELL_LENS_OF_TRUTH_CHEST,   # todo MQ lens of truth chest
+    Locations.GERUDO_TRAINING_GROUND_MAZE_PATH_FINAL_CHEST # todo MQ ice arrow chest
+]
+
 def get_prefill_songs(world: "SohWorld") -> list[Items]:
     # Do not prefill songs anywhere in particular
     if world.options.shuffle_songs in ("off", "anywhere"):
@@ -32,10 +47,37 @@ def get_prefill_songs(world: "SohWorld") -> list[Items]:
     
     return list(song_vanilla_locations.values())
 
+def reserve_song_locations(world: "SohWorld") -> None:
+    if world.options.shuffle_songs in ("off", "anywhere"):
+        return
+    
+    reservation_locations = list[Locations]()
+
+    if world.options.shuffle_songs == "song_locations":
+        reservation_locations = list(song_vanilla_locations.keys())
+    if world.options.shuffle_songs == "dungeon_rewards":
+        reservation_locations = dungeon_reward_locations
+
+    for song_location in reservation_locations:
+        location = world.get_location(song_location)
+        location.place_locked_item(world.create_item(Items.RESERVATION))
+
+def remove_song_reservations(world: "SohWorld") -> None:
+    reservation_locations = list(song_vanilla_locations.keys())
+    reservation_locations += dungeon_reward_locations
+
+    for song_location in reservation_locations:
+        location = world.get_location(song_location)
+        if location.item == world.create_item(Items.RESERVATION):
+            location.item = None
+            location.locked = False
+
 def pre_fill_songs(world: "SohWorld") -> None:
     # Do not prefill songs anywhere in particular
     if world.options.shuffle_songs in ("off", "anywhere"):
         return
+    
+    remove_song_reservations(world)
 
     songs = list[SohItem]()
     for item in get_prefill_songs(world):
@@ -53,20 +95,7 @@ def pre_fill_songs(world: "SohWorld") -> None:
         return
 
     if world.options.shuffle_songs == "dungeon_rewards":
-        reward_locations = list()
-        reward_locations.append(world.get_location(Locations.DEKU_TREE_QUEEN_GOHMA_HEART_CONTAINER))
-        reward_locations.append(world.get_location(Locations.DODONGOS_CAVERN_KING_DODONGO_HEART_CONTAINER))
-        reward_locations.append(world.get_location(Locations.JABU_JABUS_BELLY_BARINADE_HEART_CONTAINER))
-        reward_locations.append(world.get_location(Locations.FOREST_TEMPLE_PHANTOM_GANON_HEART_CONTAINER))
-        reward_locations.append(world.get_location(Locations.FIRE_TEMPLE_VOLVAGIA_HEART_CONTAINER))
-        reward_locations.append(world.get_location(Locations.WATER_TEMPLE_MORPHA_HEART_CONTAINER))
-        reward_locations.append(world.get_location(Locations.SHADOW_TEMPLE_BONGO_BONGO_HEART_CONTAINER))
-        reward_locations.append(world.get_location(Locations.SPIRIT_TEMPLE_TWINROVA_HEART_CONTAINER))
-        reward_locations.append(world.get_location(Locations.SONG_FROM_IMPA))
-        reward_locations.append(world.get_location(Locations.SHEIK_IN_ICE_CAVERN))
-        reward_locations.append(world.get_location(Locations.BOTTOM_OF_THE_WELL_LENS_OF_TRUTH_CHEST))   # todo MQ lens of truth chest
-        reward_locations.append(world.get_location(Locations.GERUDO_TRAINING_GROUND_MAZE_PATH_FINAL_CHEST)) # todo MQ ice arrow chest
-
+        reward_locations = [world.get_location(loc) for loc in dungeon_reward_locations]
         fill_restrictive(world.multiworld, prefill_state, reward_locations, songs, single_player_placement=True, lock=True)
         return
     

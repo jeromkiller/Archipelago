@@ -988,6 +988,7 @@ class Items(StrEnum):
     STICKS = "Sticks"
     NUTS = "Nuts"
     EPONA = "Epona"
+    RESERVATION = "Prefill Reservation"
     MAX = "Max"
     # Universal Tracker Required
     GLITCHED = "Glitched Item"

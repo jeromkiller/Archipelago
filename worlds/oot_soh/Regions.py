@@ -71,6 +71,7 @@ from .location_access.dungeons import \
     spirit_temple, \
     water_temple
 from .SongShuffle import song_vanilla_locations
+from .ShopItems import no_shop_shuffle
 
 if TYPE_CHECKING:
     from . import SohWorld
@@ -456,6 +457,9 @@ def place_locked_items(world: "SohWorld") -> None:
         world.get_location(Locations.GANONS_CASTLE_TOWER_BOSS_KEY_CHEST).place_locked_item(
             world.create_item(Items.GANONS_CASTLE_BOSS_KEY))
 
+    # Place vanilla shop items if they're not shuffled
+    if not world.options.shuffle_shops:
+        no_shop_shuffle(world)
 
     token_item_progressive = world.create_item(Items.GOLD_SKULLTULA_TOKEN, True, ItemClassification.progression_deprioritized_skip_balancing)
     token_item = world.create_item(Items.GOLD_SKULLTULA_TOKEN, True)
