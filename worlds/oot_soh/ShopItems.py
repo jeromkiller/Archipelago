@@ -191,6 +191,8 @@ def get_vanilla_shop_locations(world: "SohWorld") -> list[str]:
 
 
 def reserve_vanilla_shop_locations(world: "SohWorld") -> None:
+    if not world.options.shuffle_shops:
+        return
     vanilla_shop_slots = get_vanilla_shop_locations(world)
     for slot in vanilla_shop_slots:
         location = world.get_location(slot)
@@ -205,7 +207,6 @@ def remove_vanilla_shop_reservations(world: "SohWorld") -> None:
             location.locked = False
 
 def fill_shop_items(world: "SohWorld") -> None:
-    remove_vanilla_shop_reservations(world)
     # if we're using UT, we just want to place the event shop items in their proper spots
     if world.using_ut:
         world.shop_vanilla_items = world.passthrough["shop_vanilla_items"]
@@ -219,6 +220,8 @@ def fill_shop_items(world: "SohWorld") -> None:
     if not world.options.shuffle_shops:
         return
 
+    remove_vanilla_shop_reservations(world)
+    
     # select what shop slots to and vanilla items to shuffle
     num_vanilla = 8 - world.options.shuffle_shops_item_amount
     vanilla_pool = get_vanilla_shop_pool(world)
