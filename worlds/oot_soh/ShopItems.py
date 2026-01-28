@@ -27,7 +27,7 @@ vanilla_shop_prices: dict[Items, int] = {
     Items.BUY_HYLIAN_SHIELD: 80,
     Items.BUY_DEKU_SHIELD: 40,
     Items.BUY_GORON_TUNIC: 200,
-    Items.BUY_ZORA_TUNIC: 200,
+    Items.BUY_ZORA_TUNIC: 300,
     Items.BUY_HEART: 10,
     Items.BUY_BOMBCHUS10: 99,
     Items.BUY_BOMBCHUS20: 180,
