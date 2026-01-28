@@ -409,7 +409,7 @@ def place_locked_items(world: "SohWorld") -> None:
                 world.create_item(song))
 
     # Place Kokiri Sword on vanilla location if not shuffled
-    if not world.options.shuffle_kokiri_sword:
+    if not world.options.shuffle_kokiri_sword and not world.options.start_with_kokiri_sword:
         world.get_location(Locations.KF_KOKIRI_SWORD_CHEST).place_locked_item(
             world.create_item(Items.KOKIRI_SWORD))
 

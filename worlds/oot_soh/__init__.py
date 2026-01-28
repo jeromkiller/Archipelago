@@ -11,7 +11,7 @@ from .Locations import location_table, location_name_groups, token_amounts, SohL
 from .Options import SohOptions, soh_option_groups
 from .Regions import create_regions_and_locations, place_locked_items
 from .Enums import *
-from .ItemPool import create_item_pool, create_filler_item_pool, create_triforce_pieces, get_filler_item
+from .ItemPool import create_item_pool, create_filler_item_pool, create_triforce_pieces, get_filler_item, give_starting_items
 from . import RegionAgeAccess
 from .DungeonRewardShuffle import pre_fill_dungeon, get_pre_fill_rewards
 from .KeyShuffle import pre_fill_keys, get_pre_fill_keys
@@ -288,6 +288,8 @@ class SohWorld(World):
         if self.options.small_key_shuffle in ("vanilla", "own_dungeon"):
             self.multiworld.push_precollected(
                 self.create_item(str(Items.FIRE_TEMPLE_SMALL_KEY), True))
+            
+        give_starting_items(self)
 
         create_item_pool(self)
 
@@ -449,6 +451,7 @@ class SohWorld(World):
             "skip_epona_race": self.options.skip_epona_race.value,
             "complete_mask_quest": self.options.complete_mask_quest.value,
             "skip_scarecrows_song": self.options.skip_scarecrows_song.value,
+            "start_with_kokiri_sword": self.options.start_with_kokiri_sword.value,
             "full_wallets": self.options.full_wallets.value,
             "bombchu_bag": self.options.bombchu_bag.value,
             "bombchu_drops": self.options.bombchu_drops.value,

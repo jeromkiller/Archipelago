@@ -1095,6 +1095,13 @@ class ShuffleTycoonWallet(Toggle):
     display_name = "Shuffle Tycoon Wallet"
 
 
+class StartWithKokiriSword(Toggle):
+    """
+    Start with kokiri sword in your inventory
+    """
+    display_name = "Start with Kokiri Sword"
+
+
 class ItemPool(Choice):
     """
     Sets how many major items appear in the item pool.
@@ -1199,6 +1206,28 @@ class SohOptions(PerGameCommonOptions):
     skip_epona_race: SkipEponaRace
     complete_mask_quest: CompleteMaskQuest
     skip_scarecrows_song: SkipScarecrowsSong
+    #StartWithLinksPocket
+    start_with_kokiri_sword: StartWithKokiriSword
+    #StartWithMasterSword   # isn't this always on if sword isn't shuffled?
+    #StartWithDekuShield
+    #StartWithOcarina
+    #StartWithStickAmmo
+    #StartWithNutAmmo
+    #StartWithMagicBeans
+    #StartWithZeldasLullaby
+    #StartWithEponasSong
+    #StartWithSariasSong
+    #StartWithSunsSong
+    #StartWithSongOfTime
+    #StartWithSongOfStomrs
+    #StartWithMinuet
+    #StartWithBolero
+    #StartWithSerenade
+    #StartWithRequiem
+    #StartWithNocturne
+    #StartWithPrelude
+    #StartingTokens
+    #StartingHearts
     full_wallets: FullWallets
     bombchu_bag: BombchuBag
     bombchu_drops: BombchuDrops
@@ -1342,6 +1371,30 @@ soh_option_groups = [
         ItemPool,
         IceTrapCount,
         IceTrapFillerReplacement
+    ]),
+    OptionGroup("Starting Items", [
+        #StartWithLinksPocket
+        StartWithKokiriSword
+        #StartWithMasterSword   # isn't this always on if sword isn't shuffled?
+        #StartWithDekuShield
+        #StartWithOcarina
+        #StartWithStickAmmo
+        #StartWithNutAmmo
+        #StartWithMagicBeans
+        #StartWithZeldasLullaby
+        #StartWithEponasSong
+        #StartWithSariasSong
+        #StartWithSunsSong
+        #StartWithSongOfTime
+        #StartWithSongOfStomrs
+        #StartWithMinuet
+        #StartWithBolero
+        #StartWithSerenade
+        #StartWithRequiem
+        #StartWithNocturne
+        #StartWithPrelude
+        #StartingTokens
+        #StartingHearts
     ]),
     OptionGroup("Additional Features", [
         FullWallets,  # another one that should maybe just be a locally changeable setting instead of in the yaml

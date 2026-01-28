@@ -26,7 +26,8 @@ default_options: dict[str, Any] = {
     "bombchu_bag":              BombchuBag.option_none,
     "blue_fire_arrows":         Toggle.option_false,
     "sunlight_arrows":          Toggle.option_false,
-    "starting_age":             StartingAge.option_child
+    "starting_age":             StartingAge.option_child,
+    "start_with_kokiri_sword":  Toggle.option_false,
 }
 
 beginner_options = {
@@ -53,7 +54,7 @@ beginner_options = {
     "infinite_upgrades":                                InfiniteUpgrades.option_off,
     "skeleton_key":                                     SkeletonKey.option_false,
     "start_inventory_from_pool":                        {Items.PROGRESSIVE_OCARINA: 1},
-    "start_inventory":                                  {Items.KOKIRI_SWORD: 1},
+    "start_with_kokiri_sword":                          Toggle.option_true,
     "exclude_locations":                                [Locations.GF_HBA_1500_POINTS, Locations.KAK_40_GOLD_SKULLTULA_REWARD, Locations.KAK_50_GOLD_SKULLTULA_REWARD, Locations.ZR_FROGS_OCARINA_GAME]
 }
 

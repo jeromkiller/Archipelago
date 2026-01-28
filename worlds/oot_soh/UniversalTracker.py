@@ -102,6 +102,7 @@ def setup_options_from_slot_data(world: "SohWorld") -> None:
             world.options.skip_epona_race.value = world.passthrough["skip_epona_race"]
             world.options.complete_mask_quest.value = world.passthrough["complete_mask_quest"]
             world.options.skip_scarecrows_song.value = world.passthrough["skip_scarecrows_song"]
+            world.options.start_with_kokiri_sword.value = world.passthrough["start_with_kokiri_sword"]
             world.options.full_wallets.value = world.passthrough["full_wallets"]
             world.options.bombchu_bag.value = world.passthrough["bombchu_bag"]
             world.options.bombchu_drops.value = world.passthrough["bombchu_drops"]

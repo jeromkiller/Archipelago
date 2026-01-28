@@ -64,7 +64,7 @@ def create_item_pool(world: "SohWorld") -> None:
         items_to_create[Items.GOLD_SKULLTULA_TOKEN] += int(TokenCounts.DUNGEON)
 
     # Kokiri Sword
-    if world.options.shuffle_kokiri_sword:
+    if world.options.shuffle_kokiri_sword and not world.options.start_with_kokiri_sword:
         items_to_create[Items.KOKIRI_SWORD] = 1
 
     # Master Sword
@@ -359,7 +359,7 @@ def create_item_pool(world: "SohWorld") -> None:
             items_to_create[Items.PROGRESSIVE_STICK_CAPACITY] += 1
             items_to_create[Items.PROGRESSIVE_NUT_CAPACITY] += 1
 
-            if world.options.shuffle_kokiri_sword:
+            if world.options.shuffle_kokiri_sword and not world.options.start_with_kokiri_sword:
                 items_to_create[Items.KOKIRI_SWORD] += 1
 
             if world.options.shuffle_master_sword:
@@ -664,3 +664,10 @@ def get_filler_item(world: "SohWorld") -> str:
 
 def get_filler_bottle(world: "SohWorld") -> str:
     return world.random.choice(filler_bottles)
+
+
+def give_starting_items(world: "SohWorld") -> None:
+    if world.options.start_with_kokiri_sword:
+        world.push_precollected(world.create_item(Items.KOKIRI_SWORD))
+
+    
