@@ -211,6 +211,9 @@ class SohWorld(World):
         for region in self.get_regions():
             region.name = str(region.name)
 
+        if self.using_ut:
+            fill_shop_items(self)
+
     def reserve_prefill_locations(self) -> None:
         DungeonRewardShuffle.reserve_dungeon_reward_locations(self)
         SongShuffle.reserve_song_locations(self)
