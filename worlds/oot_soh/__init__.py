@@ -348,9 +348,10 @@ class SohWorld(World):
         # Add Items to the hint dict
         for item_name in items_to_make_hints:
             self.hint_list[str(item_name)] = list()
-            for item in self.item_pool:
-                if str(item_name) == item.name:
-                    self.hint_list[str(item_name)].append((item.location.player, item.location.address))
+
+        for item in self.item_pool:
+            if item.name in self.hint_list.keys():
+                self.hint_list[str(item_name)].append((item.location.player, item.location.address))
 
         # print(self.hint_list)
             
