@@ -95,6 +95,7 @@ class SohWorld(World):
         self.ganons_trials = list[GanonsTrials]()
         self.pre_fill_pool = list[Items]()
         self.reserved_pre_fill_locations = list[Locations]()
+        self.hint_list = dict[str,list[tuple]]()
 
         apworld_manifest = orjson.loads(pkgutil.get_data(
             __name__, "archipelago.json").decode("utf-8"))
@@ -341,6 +342,18 @@ class SohWorld(World):
 
         self.multiworld.completion_condition[self.player] = original_completion_goal
 
+    def post_fill(self) -> None:
+        items_to_make_hints = [Items.PROGRESSIVE_HOOKSHOT]
+
+        # Add Items to the hint dict
+        for item_name in items_to_make_hints:
+            self.hint_list[str(item_name)] = list()
+            for item in self.item_pool:
+                if str(item_name) == item.name:
+                    self.hint_list[str(item_name)].append((item.location.player, item.location.address))
+
+        # print(self.hint_list)
+            
     def run_prefill(self, item_pool: list[Items], locations: list[Locations], prefill_state: CollectionState | None = None, goal: Callable[[CollectionState], bool] | None = None):
         # check if we're using specific collectionstate
         if prefill_state is None:
@@ -554,5 +567,6 @@ class SohWorld(World):
             "enable_all_tricks": self.options.enable_all_tricks.value,
             "tricks_in_logic": self.options.tricks_in_logic.value,
             "medallion_locked_trials": self.options.medallion_locked_trials.value,
-            "starting_hearts": self.options.starting_hearts.value
+            "starting_hearts": self.options.starting_hearts.value,
+            "hint_list": self.hint_list
         }
