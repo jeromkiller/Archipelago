@@ -343,7 +343,7 @@ class SohWorld(World):
         self.multiworld.completion_condition[self.player] = original_completion_goal
 
     def post_fill(self) -> None:
-        items_to_make_hints = [Items.PROGRESSIVE_HOOKSHOT]
+        items_to_make_hints = [Items.PROGRESSIVE_HOOKSHOT, Items.GREG_THE_GREEN_RUPEE]
 
         # Add Items to the hint dict
         for item_name in items_to_make_hints:
@@ -351,7 +351,7 @@ class SohWorld(World):
 
         for item in self.item_pool:
             if item.name in self.hint_list.keys():
-                self.hint_list[str(item_name)].append((item.location.player, item.location.address))
+                self.hint_list[item.name].append((item.location.player, item.location.address))
 
         # print(self.hint_list)
             
