@@ -797,6 +797,7 @@ class GanonsCastleBossKeySkullTokensRequired(Range):
 
 class SmallKeyShuffle(Choice):
     """
+    Start With - Small with small dungeon keys in your inventory
     Vanilla - Small Keys will appear in their vanilla locations. You start with 3 keys in Spirit Temple MQ because the vanilla key layout is not beatable in logic.
     Own Dungeon - Small Keys can only appear in their respective dungeon. If Fire Temple is not a Master Quest dungeon, the door to the Boss Key chest will be unlocked.
     Any Dungeon - Small Keys can only appear inside any dungeon.
@@ -830,6 +831,7 @@ class GerudoFortressKeyShuffle(Choice):
 
 class BossKeyShuffle(Choice):
     """
+    Start With - Start with boss keys in your inventory.
     Vanilla - Boss Keys will appear in their vanilla locations.
     Own Dungeon - Boss Keys can only appear in their respective dungeon.
     Any Dungeon - Boss Keys can only appear inside any dungeon.
