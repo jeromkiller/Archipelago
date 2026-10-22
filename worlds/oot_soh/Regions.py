@@ -467,7 +467,10 @@ def place_locked_items(world: "SohWorld") -> None:
         if world.options.start_with_links_pocket == "dungeon_reward":
             dungeon_rewards = list(dungeon_reward_item_mapping.values())
             world.random.shuffle(dungeon_rewards)
-            place_locked_item(Locations.LINKS_POCKET, dungeon_rewards[0], world)
+            reward = dungeon_rewards[0]
+            place_locked_item(Locations.LINKS_POCKET, reward, world)
+            if reward in world.pre_fill_pool:
+                world.pre_fill_pool.remove(reward)
 
     # Place Ganons Boss Key
     if not world.options.ganons_castle_boss_key == "vanilla" and not world.options.ganons_castle_boss_key == "anywhere" and not world.options.triforce_hunt:

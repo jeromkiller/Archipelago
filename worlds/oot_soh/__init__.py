@@ -318,6 +318,8 @@ class SohWorld(CachedRuleBuilderWorld):
             for item in item_pool:
                 if item in self.pre_fill_pool: 
                     self.pre_fill_pool.remove(item)
+                else:
+                    item_pool.remove(item)
             
             prefill_state = self.get_pre_fill_state()
 
