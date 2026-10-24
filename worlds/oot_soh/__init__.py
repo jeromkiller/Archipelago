@@ -314,13 +314,16 @@ class SohWorld(CachedRuleBuilderWorld):
             return goal
         
         # check if we're using specific collectionstate
+        items_not_in_prefill = list()
         if prefill_state is None:
             for item in item_pool:
                 if item in self.pre_fill_pool: 
                     self.pre_fill_pool.remove(item)
                 else:
-                    item_pool.remove(item)
+                    items_not_in_prefill.append(item)
             
+            for item in items_not_in_prefill:
+                item_pool.remove(item)
             prefill_state = self.get_pre_fill_state()
 
         # get empty, non reserved locations
