@@ -93,19 +93,6 @@ def create_groups(obj: dict[Items, SohItemData] | dict[str, SohLocData]) -> dict
             groups[tag_name].add(str(key))
     return groups
 
-
-def get_item_from_pool(item: Items, item_pool: list[SohItem]) -> SohItem|None:
-    item_id = item_data_table[item].item_id
-    found_item = None
-    for soh_item in item_pool:
-        if soh_item.code == item_id:
-            found_item = soh_item
-            break
-    if found_item:
-        item_pool.remove(found_item)
-    return found_item
-
-
 class SohWorld(CachedRuleBuilderWorld):
     """A PC Port of Ocarina of Time"""
 
@@ -199,10 +186,27 @@ class SohWorld(CachedRuleBuilderWorld):
             self.options.gerudo_training_ground_key_ring.value = self.passthrough.get("gerudo_training_ground_key_ring", False)
             self.options.ganons_castle_key_ring.value = self.passthrough.get("ganons_castle_key_ring", False)
 
+    def get_item_from_pool(self, item: Items, item_pool: list[SohItem]) -> SohItem|None:
+        item_id = item_data_table[item].item_id
+        found_item = None
+        for soh_item in item_pool:
+            if soh_item.code == item_id:
+                found_item = soh_item
+                break
+        if found_item:
+            item_pool.remove(found_item)
+        return found_item
+    
+    def precollect_from_pool(self, item: Items):
+        world_item = self.get_item_from_pool(item, self.item_pool)
+        if not world_item:
+            return
+
+        world_item.code = None
+        self.push_precollected(world_item)
 
     def create_regions(self) -> None:
         create_regions_and_locations(self)
-        place_locked_items(self)
         self.reserve_prefill_locations()
         for location in self.get_locations():
             location.name = str(location.name)
@@ -302,9 +306,11 @@ class SohWorld(CachedRuleBuilderWorld):
         self.item_pool += [self.create_item(item) for item in vanilla_shop_pool]
 
         # Generate the item pool
-        give_starting_items(self)
-
         create_item_pool(self)
+
+        # Pre-place items from the pool
+        give_starting_items(self)
+        place_locked_items(self)
 
         if self.options.triforce_hunt:
             create_triforce_pieces(self)
@@ -313,7 +319,7 @@ class SohWorld(CachedRuleBuilderWorld):
 
         # Extract pre fill items from the pool
         for item in pre_fill_items:
-            if (pre_fill_item := get_item_from_pool(item, self.item_pool)):
+            if (pre_fill_item := self.get_item_from_pool(item, self.item_pool)):
                 self.pre_fill_pool.append(pre_fill_item)
 
         # Send items to the multiworld
@@ -342,7 +348,7 @@ class SohWorld(CachedRuleBuilderWorld):
         # Get the items from the prefill pool
         items = []
         for item in item_pool:
-            if (pre_fill_item := get_item_from_pool(item, self.pre_fill_pool)):
+            if (pre_fill_item := self.get_item_from_pool(item, self.pre_fill_pool)):
                 items.append(pre_fill_item)
 
         prefill_state = self.get_pre_fill_state()
